@@ -1,26 +1,34 @@
 import { Injector, Logger, webpack } from "replugged";
+import ImageModalWrapper from "./components/ImageModalWrapper";
 
 const inject = new Injector();
 const logger = Logger.plugin("PluginTemplate");
 
+// webpack.getByProps([ 'wrapper', 'downloadLink' ])
 export async function start(): Promise<void> {
-  const typingMod = await webpack.waitForModule<{
-    startTyping: (channelId: string) => void;
-  }>(webpack.filters.byProps("startTyping"));
-  const getChannelMod = await webpack.waitForModule<{
-    getChannel: (id: string) => {
-      name: string;
-    };
-  }>(webpack.filters.byProps("getChannel"));
-
-  if (typingMod && getChannelMod) {
-    inject.instead(typingMod, "startTyping", ([channel]) => {
-      const channelObj = getChannelMod.getChannel(channel);
-      logger.log(`Typing prevented! Channel: #${channelObj?.name ?? "unknown"} (${channel}).`);
-    });
-  }
+  const sus2 = webpack.getById(570738);
+  const sus = webpack.getById(159689);
+  inject.after(sus2, "y", (args, res, i) => {
+    ImageModal(res);
+  });
 }
 
 export function stop(): void {
   inject.uninjectAll();
+}
+
+function ImageModal(res) {
+  if (res) {
+    const imgae = res.props.children[1];
+    const { height, width } = res.props.children[1];
+    logger.log("ImageModal H, W", height, width);
+
+    imgae.height = height * 2;
+    imgae.width = width * 2;
+    imgae.maxHeight = (document.body.clientHeight * 70) / 100;
+    imgae.maxWidth = (document.body.clientWidth * 80) / 100;
+
+    logger.log("ImageModal the rest", res.props.children[1]);
+  }
+  return res;
 }

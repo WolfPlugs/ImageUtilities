@@ -1,16 +1,16 @@
 {
-  "id": "dev.replugged.PluginTemplate",
-  "name": "Plugin Template",
-  "description": "A plugin template",
+  "id": "dev.wolfplugs.ImageUtilities",
+  "name": "ImageUtilities",
+  "description": "ImageUtilities ",
   "author": {
-    "name": "replugged",
-    "discordID": "1000992611840049192",
-    "github": "replugged-org"
+    "name": "Wolfie",
+    "discordID": "347096063569559553",
+    "github": "wolfplugs"
   },
   "version": "1.0.0",
   "updater": {
     "type": "github",
-    "id": "replugged-org/plugin-template"
+    "id": "rwolfplugs/ImageUtilities"
   },
   "license": "MIT",
   "type": "replugged-plugin",
