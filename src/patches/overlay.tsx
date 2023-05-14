@@ -2,7 +2,7 @@ import { Injector, Logger, webpack } from 'replugged';
 const inject = new Injector();
 const logger = Logger.plugin("ImageUtilis | Overlay");
 
-module.exports = class Overlay {
+export class Overlay {
   constructor(children) {
     this.children = children;
   }

@@ -7,14 +7,13 @@ const { imageWrapper, imagePlaceholderOverlay } = webpack.getByProps([
   "imagePlaceholderOverlay",
 ]);
 
-module.exports = class ImageModalWrapper extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.imgRef = React.createRef();
-    this.$image = null;
-    this.state = {
-      lengsConfig: {},
-    };
+export class ImageModalWrapper extends React.PureComponent {
+  private imgRef = React.createRef();
+  private $image = null;
+  private state = {
+    lensConfig: {}
+  };
+    
 
     props.setUpdateLensConfig((lensConfig) => {
       this.setState({ lensConfig });

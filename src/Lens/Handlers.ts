@@ -1,5 +1,5 @@
-module.exports = class LensHandlers {
-  public static onMouseButton(e) {
+export default class LensHandlers {
+  public onMouseButton(e) {
     const res = {};
 
     if (e.button !== 2) {
@@ -8,14 +8,14 @@ module.exports = class LensHandlers {
     return res;
   }
 
-  public static onMouseMove(e) {
+  public onMouseMove(e) {
     return {
       positionX: e.clientX,
       positionY: e.clientY,
     };
   }
 
-  public static onWheel(e, current, borders) {
+  public onWheel(e, current, borders) {
     const change = (target) => {
       const [min] = borders[target];
       const step = target === "wheelStep" ? min : current.wheelStep * min;
@@ -33,7 +33,7 @@ module.exports = class LensHandlers {
     }
     return change("zooming");
   }
-};
+}
 
 function fixConfines(num, borders) {
   const [min, max] = borders;

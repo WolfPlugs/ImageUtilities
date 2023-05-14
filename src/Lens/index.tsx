@@ -3,7 +3,7 @@ import { common } from "replugged";
 
 const { React } = common;
 
-module.exports = class Lens extends React.PureComponent {
+export default class Lens extends React.PureComponent {
   render() {
     const style = { parent: {}, child: {}, raw: { x: 0, y: 0 } };
 

@@ -1,18 +1,31 @@
 import { Injector, Logger, webpack } from "replugged";
-import ImageModalWrapper from "./components/ImageModalWrapper";
+import Patcher from "./patches/index"
 
-const inject = new Injector();
-const logger = Logger.plugin("PluginTemplate");
+class ImageUtilities {
+  private inject = new Injector();
+  private logger = Logger.plugin("ImageUtilities");
+  private patcher = new Patcher();
 
-// webpack.getByProps([ 'wrapper', 'downloadLink' ])
+
+ public async start(): Promise<void> {
+    this.patcher.start();
+  }
+
+
+  public stop(): void {
+    this.patcher.stop();
+  }
+}
+
+
+
+const plugin = new ImageUtilities();
 export async function start(): Promise<void> {
-  const sus = webpack.getById(159689);
-  // console.log(this.children)
-  
+  await plugin.start(); 
 }
 
 export function stop(): void {
-  inject.uninjectAll();
+  plugin.stop();
 }
 
 
