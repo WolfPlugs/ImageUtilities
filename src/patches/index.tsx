@@ -1,5 +1,6 @@
 import { common, webpack, Injector, Logger } from "replugged";
 import Overlay from "../components/Overlay";
+import {findInReactTree} from "../utils/find"
 const { React } = common;
 
 export default class MainPatch {
@@ -9,8 +10,7 @@ export default class MainPatch {
   
 
   public start () {
-    this.inject.after(webpack.getByProps(['TransitionGroup', 'ReplaceTransition'])?.TransitionGroup.prototype, "render", (...args) => {
-      this.logger.log("sus", args)
+    this.inject.after(webpack.getBySource("._keysToEnter")?.prototype, "render", (...args) => {
       return this.overlay(...args, () => this.modalIsOpen = true);
     })
   }
@@ -20,13 +20,30 @@ export default class MainPatch {
   }
 
 
-  private overlay(args, res) {
+  private overlay(args,res, instance) {
     let tree;
-    this.logger.log("sus", args, res)
+    const nativeModalChildren = findInReactTree(res, ( m ) => m?.props?.render);
+    // console.log("Args", args);
+    //     console.log("Res", res);
+    //     console.log("Instance", instance);
     try {
-      // tree = 
+      
+      tree = nativeModalChildren?.props?.render();
+
     } catch (error) {
       this.logger.error(error)
     }
+    let settings
+
+    if (tree) {
+      const ImageModalClasses = webpack.getByProps(["image","modal", "responsiveWidthMobile"]);
+      if (findInReactTree(tree, (m) => m.props?.className === ImageModalClasses.image)) {
+        res = <Overlay children={res}></Overlay>
+        this.logger.log(res)
+      }
+      
+    }
+
+    return res;
   }
 }
