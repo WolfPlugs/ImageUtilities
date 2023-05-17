@@ -2,15 +2,22 @@
   "id": "dev.wolfplugs.ImageUtilities",
   "name": "ImageUtilities",
   "description": "ImageUtilities ",
-  "author": {
-    "name": "Wolfie",
-    "discordID": "347096063569559553",
-    "github": "wolfplugs"
-  },
+  "author": [
+    {
+      "name": "Wolfie",
+      "discordID": "347096063569559553",
+      "github": "wolfplugs"
+    },
+    {
+      "name": "Tharki-God",
+      "discordID": "1025214794766221384",
+      "github": "Tharki-God"
+    }
+  ],
   "version": "1.0.0",
   "updater": {
     "type": "github",
-    "id": "rwolfplugs/ImageUtilities"
+    "id": "wolfplugs/ImageUtilities"
   },
   "license": "MIT",
   "type": "replugged-plugin",
