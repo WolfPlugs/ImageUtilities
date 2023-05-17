@@ -1,5 +1,5 @@
 import { common, webpack, util } from "replugged";
-import Lens from "../Lens/index";
+import Lens from "../utils/tools/index";
 
 const { React } = common;
 const { imageWrapper, imagePlaceholderOverlay } = webpack.getByProps([

@@ -1,5 +1,5 @@
 import { Injector, Logger, webpack } from 'replugged';
-import {findInReactTree} from "../utils/find";
+import { findInReactTree, findInTree } from '../utils/find';
 import {ImageModalWrapper} from "../components/ImageModalwrapper" 
 import OverlayUI from '../components/OverlayUI';
 const inject = new Injector();
@@ -22,23 +22,24 @@ export default  class Overlay {
   }
 
 
-  ImageModal(res, imageModalRender) {
+  ImageModal(res, opts) {
+    const { downloadLink, wrapper } = webpack.getByProps([ 'wrapper', 'downloadLink' ])
+    let Wrapper = findInReactTree(res, (m) => m?.props?.className === wrapper).props.children;
+    let footers = Wrapper.findIndex((m) => m?.props?.className === downloadLink);
+    const image = res?.props?.children?.[1];
+
     if (res) {
-      console.log("ImageModal", res)
-      const image = res?.props?.children?.[1];
       if (!image) return res;
       const { height, width } = image;
-      // logger.log("", height, width);
   
       image.props.height *= 8;
       image.props.width *= 8;
       image.props.maxHeight = (document.body.clientHeight * 70) / 100;
       image.props.maxWidth = (document.body.clientWidth * 80) / 100;
   
-      // logger.log("", res.props.children[1]);
     }
 
-    res = <OverlayUI></OverlayUI>
+    Wrapper[footers] = <OverlayUI originalFooter={Wrapper[footers]} {...opts.overlayUI}></OverlayUI>
     return res;
   }
 

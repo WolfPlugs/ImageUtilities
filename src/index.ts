@@ -1,14 +1,14 @@
-import { Injector, Logger, webpack } from "replugged";
+import { Injector, Logger, settings } from "replugged";
 import Patcher from "./patches/index"
+const theSettings = await settings.init("imageUtilities")
 
 class ImageUtilities {
   private inject = new Injector();
   private logger = Logger.plugin("ImageUtilities");
-  private patcher = new Patcher();
-
+  private patcher = new Patcher(theSettings); 
 
  public async start(): Promise<void> {
-    this.patcher.start();
+  this.patcher.start();
   }
 
 
