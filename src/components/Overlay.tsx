@@ -9,7 +9,6 @@ const { React, channels: { getChannelId } } = common;
 export default class Overlay extends React.PureComponent {
   constructor(props) {
     super(props);
-    const { get, set } = props.settings;
     this.patcher = new Patcher(props.children);
     this.images = getImages(getChannelId());
     this.state = {
@@ -18,14 +17,23 @@ export default class Overlay extends React.PureComponent {
     }
 
     this.lensSettings = {
-      get radius () { return get('lensRadius', 100); },
-      set radius (v) { return set('lensRadius', v); },
+      get radius () {
+        if (props.settings?.get('lensRadius') === 0) return props.settings?.set('lensRadius', 100);
+        return props.settings?.get('lensRadius', 100); 
+      },
+      set radius (v) { return props.settings?.set('lensRadius', v); },
 
-      get zooming () { return get('zoomRatio', 2); },
-      set zooming (v) { return set('zoomRatio', v); },
+      get zooming () {
+        if (props.settings?.get('zoomRatio') === 0) return props.settings?.set('zoomRatio', 2);
+        return props.settings?.get('zoomRatio', 2); 
+      },
+      set zooming (v) { return props.settings?.set('zoomRatio', v); },
 
-      get wheelStep () { return get('wheelStep', 1); },
-      set wheelStep (v) { return set('wheelStep', v); }
+      get wheelStep () {
+        if (props.settings?.get('wheelStep') === 0) return props.settings?.set('wheelStep', 1);
+        return props.settings?.get('wheelStep', 1); 
+      },
+      set wheelStep (v) { return props.settings?.set('wheelStep', v); }
     };
 
     this.lensConfig = {
@@ -38,12 +46,12 @@ export default class Overlay extends React.PureComponent {
       getRectImage: () => ({}),
       renderPreview: () => null,
       style: {
-        borderColor: int2hex(get('lensColor', 0)),
+        borderColor: (props.settings?.get('lensColor', 0)),
         get imageRendering() {
-          return get('disableAntiAliasing', null) ? 'pixelated' : null;
+          return props.settings?.get('disableAntiAliasing', null) ? 'pixelated' : null;
         },
         get borderRadius() {
-          return `${get('borderRadius', 50)}%`;
+          return `${props.settings?.get('borderRadius', 50)}%`;
         }
       }
     }

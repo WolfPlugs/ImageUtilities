@@ -1,7 +1,7 @@
 {
-  "name": "plugin-template",
+  "name": "imageutilities",
   "version": "1.0.0",
-  "description": "A plugin template",
+  "description": "ImageUtilities plugin for Replugged",
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"

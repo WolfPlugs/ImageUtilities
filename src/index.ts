@@ -1,6 +1,11 @@
 import { Injector, Logger, settings } from "replugged";
 import Patcher from "./patches/index"
-const theSettings = await settings.init("imageUtilities")
+const defaultSet = {
+  lensRadius: 0,
+  zoomRatio: 0,
+  wheelStep: 0,
+}
+const theSettings = await settings.init("imageUtilities", defaultSet)
 
 class ImageUtilities {
   private inject = new Injector();
@@ -10,7 +15,6 @@ class ImageUtilities {
  public async start(): Promise<void> {
   this.patcher.start();
   }
-
 
   public stop(): void {
     this.patcher.stop();
