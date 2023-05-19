@@ -7,6 +7,14 @@ const { React, channels: { getChannelId } } = common;
 
 
 export default class Overlay extends React.PureComponent {
+  private patcher: Patcher;
+  private images: any[];
+  private state: any;
+  private lensSettings: any;
+  private lensConfig: any;
+  private sendDataToUI: any;
+  private additionalHandler: any;
+  
   constructor(props) {
     super(props);
     this.patcher = new Patcher(props.children);
@@ -94,19 +102,20 @@ export default class Overlay extends React.PureComponent {
         }}>{this.props.children}</div>)
   }
 
-  private onMouseMove(e) {
+  onMouseMove(e) {
+    console.log(this)
     const suppress = this.getAdditionalHandler(e, 'onMouseMove');
     if (suppress) return;
     this.updateLensConfig(lensHandler.onMouseMove(e))
   }
 
-  private onMouseDown(e) {
+  onMouseDown(e) {
     if (e.target.closest(`div.${wrapper}`) && this.state.$image) {
       this.onMouseButton(e)
     }
   }
 
-  private onMouseButton(e) {
+  onMouseButton(e) {
     if(e.target.closest('div.header, div.footer')) return;
 
     const suppress = this.getAdditionalHandler(e, 'onMouseButton');
@@ -115,11 +124,11 @@ export default class Overlay extends React.PureComponent {
     this.updateLensConfig(lensHandler.onMouseButton(e))
   }
 
-  private onWheel(e) {
+  onWheel(e) {
     
   }
 
-  private getAdditionalHandler (event, handlerName) {
+  getAdditionalHandler (event: Function, handlerName: string) {
     const resource = this.additionalHandler[handlerName];
     if (!resource) return false;
     const res = resource.func(event);
@@ -127,7 +136,7 @@ export default class Overlay extends React.PureComponent {
     return false;
   }
 
-  private updateCurrentImg($image) {
+  updateCurrentImg($image) {
     const updateIU = () => {
       const result = this.images.findIndex(({ proxy_url }) => proxy_url === this.state.$image.src);
       const currentImgIndex = (result === -1) ? null : result;
@@ -150,7 +159,7 @@ export default class Overlay extends React.PureComponent {
     });
   }
 
-  private updateUI(data) {
+  updateUI(data) {
     this.sendDataToUI(data);
   }
 }

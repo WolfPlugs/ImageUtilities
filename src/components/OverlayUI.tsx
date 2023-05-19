@@ -43,7 +43,7 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
     return (
       <div className='header'>
         {
-          console.log(this.props)
+          // console.log(this.props)
         }
       </div>
     )
@@ -61,7 +61,7 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
   }
 
   private renderInfo() {
-    console.log(this.state.data)
+    // console.log(this.state.data)
   }
 
   private getData(obj) {
