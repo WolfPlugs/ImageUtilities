@@ -1,9 +1,10 @@
-import { common, settings } from 'replugged';
+import { common, settings, webpack } from 'replugged';
 import Patcher from "../patches/overlay";
 import getImages from "../utils/getImage";
 import lensHandler from "../utils/tools/Handlers";
-const { React, channels: { getChannelId } } = common;
-
+const { React, channels: { getChannelId }, lodash } = common;
+const _ = lodash;
+const { wrapper } = webpack.getByProps([ 'wrapper', 'downloadLink' ])
 
 
 export default class Overlay extends React.PureComponent {
@@ -14,10 +15,11 @@ export default class Overlay extends React.PureComponent {
   private lensConfig: any;
   private sendDataToUI: any;
   private additionalHandler: any;
+  private func: this;
+  private props: any;
   
   constructor(props) {
     super(props);
-    this.patcher = new Patcher(props.children);
     this.images = getImages(getChannelId());
     this.state = {
       $image: null,
@@ -25,23 +27,23 @@ export default class Overlay extends React.PureComponent {
     }
 
     this.lensSettings = {
-      get radius () {
+      get radius() {
         if (props.settings?.get('lensRadius') === 0) return props.settings?.set('lensRadius', 100);
-        return props.settings?.get('lensRadius', 100); 
+        return props.settings?.get('lensRadius', 100);
       },
-      set radius (v) { return props.settings?.set('lensRadius', v); },
+      set radius(v) { return props.settings?.set('lensRadius', v); },
 
-      get zooming () {
+      get zooming() {
         if (props.settings?.get('zoomRatio') === 0) return props.settings?.set('zoomRatio', 2);
-        return props.settings?.get('zoomRatio', 2); 
+        return props.settings?.get('zoomRatio', 2);
       },
-      set zooming (v) { return props.settings?.set('zoomRatio', v); },
+      set zooming(v) { return props.settings?.set('zoomRatio', v); },
 
-      get wheelStep () {
+      get wheelStep() {
         if (props.settings?.get('wheelStep') === 0) return props.settings?.set('wheelStep', 1);
-        return props.settings?.get('wheelStep', 1); 
+        return props.settings?.get('wheelStep', 1);
       },
-      set wheelStep (v) { return props.settings?.set('wheelStep', v); }
+      set wheelStep(v) { return props.settings?.set('wheelStep', v); }
     };
 
     this.lensConfig = {
@@ -80,21 +82,25 @@ export default class Overlay extends React.PureComponent {
         }
       }
     }
-    const _ = "nothing"
+
+
+    this.patcher = new Patcher(props.children);
     this.patcher.start(injectOptions);
 
     this.additionalHandler = {}
+
+    _.bindAll(this, ['onMouseMove', 'onMouseDown', 'onMouseButton', 'onWheel']);
   }
 
   public render() {
     return (
       <div
-      onMouseMove={this.onMouseMove}
-      onMouseDown={this.onMouseDown}
-      onMouseLeave={this.onMouseDown}
-      onMouseUp={this.onMouseButton}
-      onClick={this.onMouseButton}
-      onKeyDown={(e) => {
+        onMouseMove={this.onMouseMove}
+        onMouseDown={this.onMouseDown}
+        onMouseLeave={this.onMouseDown}
+        onMouseUp={this.onMouseButton}
+        onClick={this.onMouseButton}
+        onKeyDown={(e) => {
           if (e.keyCode === 27) {
             this.patcher.stop();
             this.additionalHandler = {};
@@ -103,7 +109,6 @@ export default class Overlay extends React.PureComponent {
   }
 
   onMouseMove(e) {
-    console.log(this)
     const suppress = this.getAdditionalHandler(e, 'onMouseMove');
     if (suppress) return;
     this.updateLensConfig(lensHandler.onMouseMove(e))
@@ -116,7 +121,7 @@ export default class Overlay extends React.PureComponent {
   }
 
   onMouseButton(e) {
-    if(e.target.closest('div.header, div.footer')) return;
+    if (e.target.closest('div.header, div.footer')) return;
 
     const suppress = this.getAdditionalHandler(e, 'onMouseButton');
     if (suppress) return;
@@ -124,16 +129,52 @@ export default class Overlay extends React.PureComponent {
     this.updateLensConfig(lensHandler.onMouseButton(e))
   }
 
-  onWheel(e) {
-    
+  onWheel (e) {
+    if (this.props.settings.get('offScrollingOutside', false) && !e.target.closest(`div.${wrapper}`)) {
+      return;
+    }
+    const suppress = this.getAdditionalHandler(e, 'onWheel');
+    if (suppress) {
+      return;
+    }
+    const val = lensHandler.onWheel(e,
+      {
+        radius: this.lensConfig.radius,
+        zooming: this.lensConfig.zooming,
+        wheelStep: this.lensConfig.wheelStep
+      },
+      {
+        radius: [ 50, this.props.settings.get('maxLensRadius', 700) ],
+        zooming: [ 1, this.props.settings.get('maxZoomRatio', 15) ],
+        wheelStep: [ 0.1, 5 ]
+      }
+    );
+    const [ key ] = Object.keys(val);
+
+    this.lensSettings[key] = val[key];
+    this.updateLensConfig(val);
   }
 
-  getAdditionalHandler (event: Function, handlerName: string) {
+  getAdditionalHandler(event: Function, handlerName: string) {
     const resource = this.additionalHandler[handlerName];
     if (!resource) return false;
     const res = resource.func(event);
-    if( resource.capture && !res ) return true;
+    if (resource.capture && !res) return true;
     return false;
+  }
+
+  updateLensConfig(data) {
+    this.lensConfig = { ...this.lensConfig, ...data };
+
+    if (('show' in data) || this.lensConfig.show) {
+      this.state.updateLensConfig(this.lensConfig);
+    }
+
+    if (['radius', 'zooming', 'wheelStep'].some((k) => k in data)) {
+      this.updateUI({
+        lensConfig: this.lensConfig
+      });
+    }
   }
 
   updateCurrentImg($image) {
@@ -163,4 +204,5 @@ export default class Overlay extends React.PureComponent {
     this.sendDataToUI(data);
   }
 }
+
 

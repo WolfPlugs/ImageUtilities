@@ -1,7 +1,9 @@
 import { common, components, webpack } from "replugged";
+import OverlayUITooltip from "./OverlayUITooltip";
 
 const { Text } = components;
 const { React } = common;
+
 const { downloadLink } = webpack.getByProps(["downloadLink"]);
 
 
@@ -61,7 +63,61 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
   }
 
   private renderInfo() {
-    // console.log(this.state.data)
+    const { $image, attachment } = this.state.data;
+    const { href } = this.props.originalFooter.props;
+    const url = new URL(href);
+
+    const renderTooltip = (child, text, error) => (
+      <p style={{ color: (error) ? 'var(--text-danger)' : null }}>
+        <OverlayUITooltip copyText={text || child} error={error}>{child}</OverlayUITooltip>
+      </p>
+    );
+    const renderLoading = () => (
+      <span className='string'>
+        <p>loading...</p>
+      </span>
+    );
+    const renderSeparator = () => (
+      <p style={{ pointerEvents: 'none' }}>|</p>
+    );
+
+    const renderResolution = () => {
+      const get = (t) => this.state.resolution[t] || $image[`video${t}`] || $image[`natural${t}`] || ' ? ';
+      if ($image) {
+        return renderTooltip(`${get('Width')}x${get('Height')}`);
+      }
+      return null;
+    };
+    const renderSize = () => {
+      if (attachment) {
+        const strSize = this.bytes2str(attachment.size || this.state.size);
+        if (!attachment.size && !this.state.size) {
+          this.loadSize($image.src);
+        }
+        return renderTooltip(strSize, null, (this.failedLoadSize) ? this.failedLoadSize : null);
+      }
+      return null;
+    };
+
+    return (
+      <div className='image-info'>
+        <span className='string curtail'>
+          {
+            renderTooltip(url.pathname.split('/').pop())
+          }
+        </span>
+        <span className='string'>
+          {
+            renderResolution() || renderLoading()} {renderSeparator()} {renderSize() || renderLoading()
+          }
+        </span>
+        <span className='string curtail'>
+          {
+            renderTooltip(url.href)
+          }
+        </span>
+      </div>
+    );
   }
 
   private getData(obj) {
@@ -71,7 +127,7 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
         this.setState(() => ({
           showConfig: true
         }),
-        this.hideConfig);
+          this.hideConfig);
       }
       if ($image) {
         $image.addEventListener('loadedmetadata', () => {
@@ -95,8 +151,24 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
     this.setState(({ data }) => ({
       data: { ...data, ...obj }
     }),
-    onStated);
+      onStated);
 
+  }
+
+
+  bytes2str(bytes) {
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+
+    if (bytes === null) {
+      return '-';
+    }
+    if (bytes === 0) {
+      return '0 Bytes';
+    }
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
   }
 
 }

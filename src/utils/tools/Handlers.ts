@@ -1,4 +1,4 @@
-export default class LensHandlers {
+export default new(class LensHandlers {
   public onMouseButton(e) {
     const res = {};
 
@@ -33,7 +33,7 @@ export default class LensHandlers {
     }
     return change("zooming");
   }
-}
+})
 
 function fixConfines(num, borders) {
   const [min, max] = borders;
