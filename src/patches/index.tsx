@@ -6,7 +6,9 @@ const { React } = common;
 export default class MainPatch {
   private inject = new Injector();
   private logger = Logger.plugin("ImageUtilis | Overlay");
-
+  private settings: any;
+  private modalIsOpen: boolean;
+  
   constructor (settings) {
     this.settings = settings;
     this.modalIsOpen = false;
@@ -15,11 +17,10 @@ export default class MainPatch {
   public start () {
     this.injectWithSettings(webpack.getBySource("._keysToEnter")?.prototype, "render", (...args) => {
       this.modalIsOpen = false;
+      // eslint-disable-next-line no-return-assign
       return this.overlay(...args, () => this.modalIsOpen = true);
     })
-    // this.inject.after(webpack.getBySource("._keysToEnter")?.prototype, "render", (...args) => {
-    //   return this.overlay(...args, () => this.modalIsOpen = true);
-    // })
+
   }
 
   public stop () {

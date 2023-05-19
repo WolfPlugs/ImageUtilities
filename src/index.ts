@@ -1,5 +1,7 @@
 import { Injector, Logger, settings } from "replugged";
 import Patcher from "./patches/index"
+import "./style.css"
+
 const defaultSet = {
   lensRadius: 0,
   zoomRatio: 0,

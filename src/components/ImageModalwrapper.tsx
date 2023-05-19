@@ -1,4 +1,4 @@
-import { common, webpack, util } from "replugged";
+import { common, util, webpack } from "replugged";
 import Lens from "../utils/tools/index";
 
 const { React } = common;
@@ -8,7 +8,12 @@ const { imageWrapper, imagePlaceholderOverlay } = webpack.getByProps([
 ]);
 
 export class ImageModalWrapper extends React.PureComponent {
-  constructor(props){
+  props: any;
+  state: any;
+  imgRef: any;
+  $image: any;
+
+  constructor(props) {
     super(props);
     this.imgRef = React.createRef();
     this.$image = null;
@@ -24,7 +29,7 @@ export class ImageModalWrapper extends React.PureComponent {
  
   
 
-  componentDidMount() {
+  componentDidMount() { 
     this.updateCurrentImg();
   }
 
@@ -46,8 +51,19 @@ export class ImageModalWrapper extends React.PureComponent {
   }
 
   async updateCurrentImg() {
-    this.props.set$image(await util.waitFor());
+    this.props.set$image(await this.waitFor());
+  }
+ 
+  async waitFor () {
+    const elem = this.imgRef.current?.querySelector(`.${imageWrapper} > img, video, canvas`);
+
+    if (!elem || elem?.classList?.contains(imagePlaceholderOverlay)) {
+      await util.sleep(5);
+      return this.waitFor();
+    }
+
+    return elem;
   }
 
   
-};
+}

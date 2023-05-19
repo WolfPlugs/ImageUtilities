@@ -1,13 +1,19 @@
 import { common, components, webpack } from "replugged";
 import OverlayUITooltip from "./OverlayUITooltip";
 
-const { Text } = components;
-const { React } = common;
+const { Text, Clickable, Tooltip } = components;
+const { React, lodash } = common;
 
 const { downloadLink } = webpack.getByProps(["downloadLink"]);
-
+const { buttons } = webpack.getByProps(['button', 'buttons'])
+const { button, sizeIcon } = webpack.getByProps(['button', 'sizeIcon']);
 
 export default class ImageToolsOverlayUI extends React.PureComponent {
+  state: any;
+  props: any;
+  failedLoadSize: boolean;
+  hideConfig: any;
+
   constructor({ sendDataToUI }) {
     super();
     sendDataToUI(this.getData.bind(this));
@@ -18,9 +24,10 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
       resolution: { width: null, height: null },
     };
     this.failedLoadSize = false;
+    this.hideConfig = lodash.debounce(() => this.setState({ showConfig: false }), 1000);
   }
 
-  render() {
+  public render() {
     return (
       <div className="image-tools-overlay-ui" style={{ color: "white", fontSize: "90px" }}>
         {this.renderLensConfig()}
@@ -31,21 +38,32 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
   }
 
   private renderLensConfig() {
+    const { showConfig, data: { lensConfig } } = this.state;
+    if (!lensConfig) return null;
     return (
       <div className='lens-config'>
-        <div className={`lens lens-hide`}></div>
-        <Text>{ }: {Number(10).toFixed(1)}x</Text>
-        <Text>{`[CTRL]`}: {Number(100).toFixed()}px</Text>
-        <Text>{`[SHIFT]`}: {Number(50).toFixed(2)}</Text>
+        <div className={`lens ${showConfig ? null : 'lens-hide'}`}></div>
+        <Text>{`Zoom ratio`}: {Number(lensConfig.zooming).toFixed(1)}x</Text>
+        <Text>{`Lens radius [CTRL]`}: {Number(lensConfig.radious).toFixed()}px</Text>
+        <Text>{`Scroll step [SHIFT]`}: {Number(lensConfig.wheelStep).toFixed(2)}</Text>
       </div>
     )
   }
 
   private renderHeader() {
     return (
-      <div className='header'>
+      <div className={`header ${buttons}`}>
         {
           // console.log(this.props)
+          this.props.headerButtons.map(({ tooltip, callback, Icon }) => (
+            <Clickable onClick={callback}>
+              <div className={`${button} ${sizeIcon} button`}>
+                <Tooltip text={tooltip}>
+                  <Icon />
+                </Tooltip>
+              </div>
+            </Clickable>
+          ))
         }
       </div>
     )
@@ -155,12 +173,26 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
 
   }
 
+  private loadSize (url) {
+    if (!this.failedLoadSize) {
+      fetch(url)
+        .then((resp) => resp.headers.get('content-length'))
+        .then((size) => {
+          this.setState({ size });
+        })
+        .catch((err) => {
+          console.error(err);
+          this.failedLoadSize = err;
+        });
+    }
+  }
 
-  bytes2str(bytes) {
+
+  private bytes2str(bytes) {
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
 
-    if (bytes === null) {
+    if (bytes == null) {
       return '-';
     }
     if (bytes === 0) {

@@ -15,7 +15,7 @@ export default class Overlay extends React.PureComponent {
   private lensConfig: any;
   private sendDataToUI: any;
   private additionalHandler: any;
-  private func: this;
+  private setState: any;
   private props: any;
   
   constructor(props) {
@@ -75,16 +75,16 @@ export default class Overlay extends React.PureComponent {
         }
       },
       imageModalRender: {
-        // lensConfig: this.lensConfig,
+        lensConfig: this.lensConfig,
         overlayUI: {
-          // headerButtons: this.getButtons(),
+          headerButtons: this.getButtons(),
           sendDataToUI: (callback) => this.sendDataToUI = callback
         }
       }
     }
 
 
-    this.patcher = new Patcher(props.children);
+    this.patcher = new Patcher(props.settings, props.children);
     this.patcher.start(injectOptions);
 
     this.additionalHandler = {}
@@ -175,6 +175,10 @@ export default class Overlay extends React.PureComponent {
         lensConfig: this.lensConfig
       });
     }
+  }
+
+  getButtons() {
+    return [];
   }
 
   updateCurrentImg($image) {

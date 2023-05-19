@@ -1,5 +1,6 @@
-import { common, components  } from "replugged";
-const { React } = common;
+import { common, components } from "replugged";
+import { Clipboard } from "../utils/clipboard";
+const { React, i18n: { Messages } } = common;
 const { Tooltip, Clickable } = components;
 
 export default class OverlayUIToolTip extends React.PureComponent {
@@ -32,6 +33,8 @@ export default class OverlayUIToolTip extends React.PureComponent {
 
   openTooltip() {
     if (this.props.error) return;
-    // this.setState({ text:  });
+    this.setState({ text: Messages.COPIED  });
+    Clipboard.copy(this.props.copyText)
+    setTimeout(() => this.setState({ text: null }), 1000);
   }
 }
