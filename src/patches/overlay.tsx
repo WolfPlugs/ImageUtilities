@@ -1,5 +1,5 @@
 import { Injector, Logger, webpack } from 'replugged';
-import { findInReactTree } from '../utils/find';
+import { findInReactTree, findInTree } from '../utils/find';
 import {ImageModalWrapper} from "../components/ImageModalwrapper" 
 import OverlayUI from '../components/OverlayUI';
 const inject = new Injector();
@@ -15,8 +15,10 @@ export default  class Overlay {
 
 
   start({ modalLayer, imageModalRender}) {
-    const sus2 = webpack.getById(570738);
-    inject.after(sus2 as any, "y", (_, res) => this.imageModal(res, imageModalRender));
+    const image = webpack.getById(570738);
+    const video = webpack.getById(159689);
+    // inject.after(video as any, "Z", (_, res) => this.imageRender(res));
+    inject.after(image as any, "y", (_, res) => this.imageModal(res, imageModalRender));
     this.patchModalLayer(modalLayer);
   }
 
@@ -25,7 +27,14 @@ export default  class Overlay {
   }
 
   imageRender (res) {
-    console.log(res)
+    // console.log(findInReactTree(res, ({ props }) => props))
+
+    // const Video = findInReactTree(res, ({ m }) => m?.props?.alt === 'Video');
+    // if (Video) {
+    //   Video.props.play = true;
+    // }
+    // return res;
+    
   }
 
 
@@ -51,7 +60,6 @@ export default  class Overlay {
       if (Image.type.isAnimated({ original: Image.props.src})) {
         Image.props.animated = true;
       }
-      console.log(opts)
       opts.lensConfig.children = Image;
     }
 

@@ -4,20 +4,20 @@ import getImages from "../utils/getImage";
 import lensHandler from "../utils/tools/Handlers";
 const { React, channels: { getChannelId }, lodash } = common;
 const _ = lodash;
-const { wrapper } = webpack.getByProps([ 'wrapper', 'downloadLink' ])
+const { wrapper } = webpack.getByProps(['wrapper', 'downloadLink'])
 
 
-export default class Overlay extends React.PureComponent {
-  private patcher: Patcher;
-  private images: any[];
-  private state: any;
-  private lensSettings: any;
-  private lensConfig: any;
-  private sendDataToUI: any;
-  private additionalHandler: any;
-  private setState: any;
-  private props: any;
-  
+export default class ImageToolsOverlay extends React.PureComponent {
+  public patcher: Patcher;
+  public images: any[];
+  public state: any;
+  public lensSettings: any;
+  public lensConfig: any;
+  public additionalHandler: any;
+  public setState: any;
+  public props: any;
+  public sendDataToUI: Function;
+
   constructor(props) {
     super(props);
     this.images = getImages(getChannelId());
@@ -78,7 +78,13 @@ export default class Overlay extends React.PureComponent {
         lensConfig: this.lensConfig,
         overlayUI: {
           headerButtons: this.getButtons(),
-          sendDataToUI: (callback) => this.sendDataToUI = callback
+          sendDataToUI: (callback) => Object.defineProperty(this, "sendDataToUI", {
+            get: () => {
+              return callback;
+            },
+            configurable: true,
+            enumerable: true,
+          })
         }
       }
     }
@@ -108,19 +114,19 @@ export default class Overlay extends React.PureComponent {
         }}>{this.props.children}</div>)
   }
 
-  onMouseMove(e) {
+  public onMouseMove(e) {
     const suppress = this.getAdditionalHandler(e, 'onMouseMove');
     if (suppress) return;
     this.updateLensConfig(lensHandler.onMouseMove(e))
   }
 
-  onMouseDown(e) {
+  public onMouseDown(e) {
     if (e.target.closest(`div.${wrapper}`) && this.state.$image) {
       this.onMouseButton(e)
     }
   }
 
-  onMouseButton(e) {
+  public onMouseButton(e) {
     if (e.target.closest('div.header, div.footer')) return;
 
     const suppress = this.getAdditionalHandler(e, 'onMouseButton');
@@ -129,7 +135,7 @@ export default class Overlay extends React.PureComponent {
     this.updateLensConfig(lensHandler.onMouseButton(e))
   }
 
-  onWheel (e) {
+  public onWheel(e) {
     if (this.props.settings.get('offScrollingOutside', false) && !e.target.closest(`div.${wrapper}`)) {
       return;
     }
@@ -144,18 +150,18 @@ export default class Overlay extends React.PureComponent {
         wheelStep: this.lensConfig.wheelStep
       },
       {
-        radius: [ 50, this.props.settings.get('maxLensRadius', 700) ],
-        zooming: [ 1, this.props.settings.get('maxZoomRatio', 15) ],
-        wheelStep: [ 0.1, 5 ]
+        radius: [50, this.props.settings.get('maxLensRadius', 700)],
+        zooming: [1, this.props.settings.get('maxZoomRatio', 15)],
+        wheelStep: [0.1, 5]
       }
     );
-    const [ key ] = Object.keys(val);
+    const [key] = Object.keys(val);
 
     this.lensSettings[key] = val[key];
     this.updateLensConfig(val);
   }
 
-  getAdditionalHandler(event: Function, handlerName: string) {
+  public getAdditionalHandler(event: Function, handlerName: string) {
     const resource = this.additionalHandler[handlerName];
     if (!resource) return false;
     const res = resource.func(event);
@@ -163,7 +169,7 @@ export default class Overlay extends React.PureComponent {
     return false;
   }
 
-  updateLensConfig(data) {
+  public updateLensConfig(data) {
     this.lensConfig = { ...this.lensConfig, ...data };
 
     if (('show' in data) || this.lensConfig.show) {
@@ -177,11 +183,11 @@ export default class Overlay extends React.PureComponent {
     }
   }
 
-  getButtons() {
+  public getButtons() {
     return [];
   }
 
-  updateCurrentImg($image) {
+ public updateCurrentImg($image) {
     const updateIU = () => {
       const result = this.images.findIndex(({ proxy_url }) => proxy_url === this.state.$image.src);
       const currentImgIndex = (result === -1) ? null : result;
@@ -189,9 +195,10 @@ export default class Overlay extends React.PureComponent {
       this.setState({ currentImgIndex });
       this.updateUI({
         $image,
-        attachment: (currentImgIndex !== null) ? this.images[currentImgIndex] : {}
+        attachment: (currentImgIndex != null) ? this.images[currentImgIndex] : {},
       });
     };
+
     const updateLens = () => {
       this.updateLensConfig({
         getRectImage: () => $image.getBoundingClientRect()
@@ -204,9 +211,9 @@ export default class Overlay extends React.PureComponent {
     });
   }
 
-  updateUI(data) {
+  public updateUI(data) {
+    console.log(this)
     this.sendDataToUI(data);
   }
+
 }
-
-

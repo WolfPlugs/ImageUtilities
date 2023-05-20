@@ -13,10 +13,12 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
   props: any;
   failedLoadSize: boolean;
   hideConfig: any;
+  setState: any;
 
   constructor({ sendDataToUI }) {
     super();
-    sendDataToUI(this.getData.bind(this));
+    console.log(this.getData(this))
+    sendDataToUI();
 
     this.state = {
       data: {},
@@ -54,7 +56,6 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
     return (
       <div className={`header ${buttons}`}>
         {
-          // console.log(this.props)
           this.props.headerButtons.map(({ tooltip, callback, Icon }) => (
             <Clickable onClick={callback}>
               <div className={`${button} ${sizeIcon} button`}>
@@ -141,6 +142,7 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
   private getData(obj) {
     const onStated = () => {
       const { $image } = obj;
+
       if (obj.lensConfig) {
         this.setState(() => ({
           showConfig: true
