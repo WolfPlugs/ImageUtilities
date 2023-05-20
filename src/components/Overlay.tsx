@@ -16,7 +16,6 @@ export default class Overlay extends React.PureComponent {
   private state: any;
   private lensSettings: any;
   private lensConfig: any;
-  private sendDataToUI: any;
   private additionalHandler: any;
   private setState: any;
   private props: any;
@@ -113,6 +112,7 @@ export default class Overlay extends React.PureComponent {
         onMouseLeave={this.onMouseDown}
         onMouseUp={this.onMouseButton}
         onClick={this.onMouseButton}
+        onWheel={this.onWheel}
         onKeyDown={(e) => {
           if (e.keyCode === 27) {
             this.patcher.stop();
@@ -164,8 +164,8 @@ export default class Overlay extends React.PureComponent {
         wheelStep: this.lensConfig.wheelStep,
       },
       {
-        radius: [50, this.props.settings.get("maxLensRadius", 700)],
-        zooming: [1, this.props.settings.get("maxZoomRatio", 15)],
+        radius: [50, this.props?.settings?.get("maxLensRadius", 700)],
+        zooming: [1, this.props?.settings?.get("maxZoomRatio", 15)],
         wheelStep: [0.1, 5],
       },
     );
@@ -209,12 +209,12 @@ export default class Overlay extends React.PureComponent {
       this.setState((prevState) => Object.assign({}, prevState, { currentImgIndex }));
       this.updateUI({
         $image,
-        attachment: currentImgIndex !== null ? this.images[currentImgIndex] : {},
+        attachment: currentImgIndex != null ? this.images[currentImgIndex] : {},
       });
     };
 
     const updateLens = () => {
-      this.state.updateLensConfig({
+      this.updateLensConfig({
         getRectImage: () => $image.getBoundingClientRect(),
       });
     };

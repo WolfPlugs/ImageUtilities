@@ -45,9 +45,7 @@ export default class Overlay {
       (m) => m?.props?.className === downloadLink || m?.props.originalFooter,
     );
     let Image = res?.props?.children?.[1];
-    console.log("Wrapper", Wrapper);
-    console.log("Fotter Index", footers);
-    console.log("Fotter", Wrapper[footers]);
+
     if (res) {
       if (!Image) return res;
 

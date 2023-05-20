@@ -17,8 +17,7 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
 
   constructor({ sendDataToUI }) {
     super();
-    console.log(this.getData(this))
-    sendDataToUI();
+    sendDataToUI(this.getData.bind(this));
 
     this.state = {
       data: {},
@@ -52,7 +51,7 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
           {`Zoom ratio`}: {Number(lensConfig.zooming).toFixed(1)}x
         </Text>
         <Text>
-          {`Lens radius [CTRL]`}: {Number(lensConfig.radious).toFixed()}px
+          {`Lens radius [CTRL]`}: {Number(lensConfig.radius).toFixed()}px
         </Text>
         <Text>
           {`Scroll step [SHIFT]`}: {Number(lensConfig.wheelStep).toFixed(2)}
