@@ -5,8 +5,8 @@ const { Text, Clickable, Tooltip } = components;
 const { React, lodash } = common;
 
 const { downloadLink } = webpack.getByProps(["downloadLink"]);
-const { buttons } = webpack.getByProps(['button', 'buttons'])
-const { button, sizeIcon } = webpack.getByProps(['button', 'sizeIcon']);
+const { buttons } = webpack.getByProps(["button", "buttons"]);
+const { button, sizeIcon } = webpack.getByProps(["button", "sizeIcon"]);
 
 export default class ImageToolsOverlayUI extends React.PureComponent {
   state: any;
@@ -36,20 +36,29 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
         {this.renderHeader()}
         {this.renderFooter()}
       </div>
-    )
+    );
   }
 
   private renderLensConfig() {
-    const { showConfig, data: { lensConfig } } = this.state;
+    const {
+      showConfig,
+      data: { lensConfig },
+    } = this.state;
     if (!lensConfig) return null;
     return (
-      <div className='lens-config'>
-        <div className={`lens ${showConfig ? null : 'lens-hide'}`}></div>
-        <Text>{`Zoom ratio`}: {Number(lensConfig.zooming).toFixed(1)}x</Text>
-        <Text>{`Lens radius [CTRL]`}: {Number(lensConfig.radious).toFixed()}px</Text>
-        <Text>{`Scroll step [SHIFT]`}: {Number(lensConfig.wheelStep).toFixed(2)}</Text>
+      <div className="lens-config">
+        <div className={`lens ${showConfig ? null : "lens-hide"}`}></div>
+        <Text>
+          {`Zoom ratio`}: {Number(lensConfig.zooming).toFixed(1)}x
+        </Text>
+        <Text>
+          {`Lens radius [CTRL]`}: {Number(lensConfig.radious).toFixed()}px
+        </Text>
+        <Text>
+          {`Scroll step [SHIFT]`}: {Number(lensConfig.wheelStep).toFixed(2)}
+        </Text>
       </div>
-    )
+    );
   }
 
   private renderHeader() {
@@ -67,18 +76,18 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
           ))
         }
       </div>
-    )
+    );
   }
 
   private renderFooter() {
     return (
       <div className={`footer ${downloadLink}`}>
-        <div className='content'>
+        <div className="content">
           {this.props.originalFooter}
           {this.renderInfo()}
         </div>
       </div>
-    )
+    );
   }
 
   private renderInfo() {
@@ -87,23 +96,24 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
     const url = new URL(href);
 
     const renderTooltip = (child, text, error) => (
-      <p style={{ color: (error) ? 'var(--text-danger)' : null }}>
-        <OverlayUITooltip copyText={text || child} error={error}>{child}</OverlayUITooltip>
+      <p style={{ color: error ? "var(--text-danger)" : null }}>
+        <OverlayUITooltip copyText={text || child} error={error}>
+          {child}
+        </OverlayUITooltip>
       </p>
     );
     const renderLoading = () => (
-      <span className='string'>
+      <span className="string">
         <p>loading...</p>
       </span>
     );
-    const renderSeparator = () => (
-      <p style={{ pointerEvents: 'none' }}>|</p>
-    );
+    const renderSeparator = () => <p style={{ pointerEvents: "none" }}>|</p>;
 
     const renderResolution = () => {
-      const get = (t) => this.state.resolution[t] || $image[`video${t}`] || $image[`natural${t}`] || ' ? ';
+      const get = (t) =>
+        this.state.resolution[t] || $image[`video${t}`] || $image[`natural${t}`] || " ? ";
       if ($image) {
-        return renderTooltip(`${get('Width')}x${get('Height')}`);
+        return renderTooltip(`${get("Width")}x${get("Height")}`);
       }
       return null;
     };
@@ -113,28 +123,19 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
         if (!attachment.size && !this.state.size) {
           this.loadSize($image.src);
         }
-        return renderTooltip(strSize, null, (this.failedLoadSize) ? this.failedLoadSize : null);
+        return renderTooltip(strSize, null, this.failedLoadSize ? this.failedLoadSize : null);
       }
       return null;
     };
 
     return (
-      <div className='image-info'>
-        <span className='string curtail'>
-          {
-            renderTooltip(url.pathname.split('/').pop())
-          }
+      <div className="image-info">
+        <span className="string curtail">{renderTooltip(url.pathname.split("/").pop())}</span>
+        <span className="string">
+          {renderResolution() || renderLoading()} {renderSeparator()}{" "}
+          {renderSize() || renderLoading()}
         </span>
-        <span className='string'>
-          {
-            renderResolution() || renderLoading()} {renderSeparator()} {renderSize() || renderLoading()
-          }
-        </span>
-        <span className='string curtail'>
-          {
-            renderTooltip(url.href)
-          }
-        </span>
+        <span className="string curtail">{renderTooltip(url.href)}</span>
       </div>
     );
   }
@@ -144,41 +145,48 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
       const { $image } = obj;
 
       if (obj.lensConfig) {
-        this.setState(() => ({
-          showConfig: true
-        }),
-          this.hideConfig);
+        this.setState(
+          () => ({
+            showConfig: true,
+          }),
+          this.hideConfig,
+        );
       }
       if ($image) {
-        $image.addEventListener('loadedmetadata', () => {
+        $image.addEventListener(
+          "loadedmetadata",
+          () => {
+            this.setState({
+              resolution: { Width: obj.$image.videoWidth, Height: obj.$image.videoHeight },
+            });
+          },
+          false,
+        );
+        $image.addEventListener("load", () => {
           this.setState({
-            resolution: { Width: obj.$image.videoWidth, Height: obj.$image.videoHeight }
-          });
-        }, false);
-        $image.addEventListener('load', () => {
-          this.setState({
-            resolution: { Width: obj.$image.naturalWidth, Height: obj.$image.naturalHeight }
+            resolution: { Width: obj.$image.naturalWidth, Height: obj.$image.naturalHeight },
           });
         });
-        if ($image.tagName !== 'IMG' && $image.tagName !== 'VIDEO') {
+        if ($image.tagName !== "IMG" && $image.tagName !== "VIDEO") {
           this.setState({
-            resolution: { Width: obj.$image.width, Height: obj.$image.height }
+            resolution: { Width: obj.$image.width, Height: obj.$image.height },
           });
         }
       }
     };
 
-    this.setState(({ data }) => ({
-      data: { ...data, ...obj }
-    }),
-      onStated);
-
+    this.setState(
+      ({ data }) => ({
+        data: { ...data, ...obj },
+      }),
+      onStated,
+    );
   }
 
-  private loadSize (url) {
+  private loadSize(url) {
     if (!this.failedLoadSize) {
       fetch(url)
-        .then((resp) => resp.headers.get('content-length'))
+        .then((resp) => resp.headers.get("content-length"))
         .then((size) => {
           this.setState({ size });
         })
@@ -189,20 +197,18 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
     }
   }
 
-
   private bytes2str(bytes) {
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
 
     if (bytes == null) {
-      return '-';
+      return "-";
     }
     if (bytes === 0) {
-      return '0 Bytes';
+      return "0 Bytes";
     }
 
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
   }
-
 }
