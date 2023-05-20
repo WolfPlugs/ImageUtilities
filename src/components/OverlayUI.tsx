@@ -63,17 +63,15 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
   private renderHeader() {
     return (
       <div className={`header ${buttons}`}>
-        {
-          this.props.headerButtons.map(({ tooltip, callback, Icon }) => (
-            <Clickable onClick={callback}>
-              <div className={`${button} ${sizeIcon} button`}>
-                <Tooltip text={tooltip}>
-                  <Icon />
-                </Tooltip>
-              </div>
-            </Clickable>
-          ))
-        }
+        {this.props.headerButtons.map(({ tooltip, callback, Icon }) => (
+          <Clickable onClick={callback}>
+            <div className={`${button} ${sizeIcon} button`}>
+              <Tooltip text={tooltip}>
+                <Icon />
+              </Tooltip>
+            </div>
+          </Clickable>
+        ))}
       </div>
     );
   }

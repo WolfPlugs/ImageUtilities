@@ -201,7 +201,7 @@ export default class Overlay extends React.PureComponent {
     return [];
   }
 
- public updateCurrentImg($image) {
+  public updateCurrentImg($image) {
     const updateIU = () => {
       const result = this.images.findIndex(({ proxy_url }) => proxy_url === this.state.$image.src);
       const currentImgIndex = result === -1 ? null : result;
@@ -231,5 +231,4 @@ export default class Overlay extends React.PureComponent {
   updateUI(data) {
     this.state.sendDataToUI(data);
   }
-
 }

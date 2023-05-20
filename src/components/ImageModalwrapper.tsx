@@ -20,16 +20,13 @@ export class ImageModalWrapper extends React.PureComponent {
     this.imgRef = React.createRef();
     this.$image = null;
     this.state = {
-      lensConfig: {}
+      lensConfig: {},
     };
-
 
     props.setUpdateLensConfig((lensConfig) => {
       this.setState({ lensConfig });
     });
   }
-
-
 
   componentDidMount() {
     this.updateCurrentImg();
@@ -66,6 +63,4 @@ export class ImageModalWrapper extends React.PureComponent {
 
     return elem;
   }
-
-
 }

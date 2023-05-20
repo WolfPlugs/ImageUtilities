@@ -73,7 +73,7 @@ export default class Lens extends React.PureComponent {
       },
     ];
   }
-};
+}
 
 function fixConfines(num, borders) {
   const [min, max] = borders;

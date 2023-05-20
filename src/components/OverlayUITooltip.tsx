@@ -1,6 +1,9 @@
 import { common, components } from "replugged";
 import { Clipboard } from "../utils/clipboard";
-const { React, i18n: { Messages } } = common;
+const {
+  React,
+  i18n: { Messages },
+} = common;
 const { Tooltip, Clickable } = components;
 
 export default class OverlayUIToolTip extends React.PureComponent {
@@ -10,8 +13,8 @@ export default class OverlayUIToolTip extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      text: null
-    }
+      text: null,
+    };
     this.openTooltip = this.openTooltip.bind(this);
   }
 
@@ -20,21 +23,18 @@ export default class OverlayUIToolTip extends React.PureComponent {
 
     return (
       <Tooltip
-      text={(isError) ? this.props.error.toString(): this.state.text }
-      color={(isError) ? 'red' : 'green'}
-      forceOpen={!isError}
-      >
-        <Clickable onClick={this.openTooltip}>
-          {this.props.children}
-        </Clickable>
+        text={isError ? this.props.error.toString() : this.state.text}
+        color={isError ? "red" : "green"}
+        forceOpen={!isError}>
+        <Clickable onClick={this.openTooltip}>{this.props.children}</Clickable>
       </Tooltip>
-    )
+    );
   }
 
   openTooltip() {
     if (this.props.error) return;
-    this.setState({ text: Messages.COPIED  });
-    Clipboard.copy(this.props.copyText)
+    this.setState({ text: Messages.COPIED });
+    Clipboard.copy(this.props.copyText);
     setTimeout(() => this.setState({ text: null }), 1000);
   }
 }

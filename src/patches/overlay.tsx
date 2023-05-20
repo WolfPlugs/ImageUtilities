@@ -13,8 +13,7 @@ export default class Overlay {
     this.patchImageSize = settings?.get("patchImageSize", true);
   }
 
-
-  start({ modalLayer, imageModalRender}) {
+  start({ modalLayer, imageModalRender }) {
     const image = webpack.getById(570738);
     const video = webpack.getById(159689);
     // inject.after(video as any, "Z", (_, res) => this.imageRender(res));
@@ -26,15 +25,13 @@ export default class Overlay {
     inject.uninjectAll();
   }
 
-  imageRender (res) {
+  imageRender(res) {
     // console.log(findInReactTree(res, ({ props }) => props))
-
     // const Video = findInReactTree(res, ({ m }) => m?.props?.alt === 'Video');
     // if (Video) {
     //   Video.props.play = true;
     // }
     // return res;
-    
   }
 
   imageModal(res, opts) {
