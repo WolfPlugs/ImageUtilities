@@ -42,7 +42,7 @@ export default class Overlay {
       (m) => m?.props?.className === downloadLink || m?.props.originalFooter,
     );
     let Image = res?.props?.children?.[1];
-
+  
     if (res) {
       if (!Image) return res;
 
@@ -52,7 +52,6 @@ export default class Overlay {
         Image.props.maxHeight = (document.body.clientHeight * 70) / 100;
         Image.props.maxWidth = (document.body.clientWidth * 80) / 100;
       }
-
       if (Image.type.isAnimated({ original: Image.props.src })) {
         Image.props.animated = true;
       }

@@ -10,7 +10,7 @@ const {
 const _ = lodash;
 const { wrapper } = webpack.getByProps(["wrapper", "downloadLink"]);
 
-export default class Overlay extends React.PureComponent {
+export default class ImageToolsOverlay extends React.PureComponent {
   private patcher: Patcher;
   private images: any[];
   private state: any;
@@ -138,7 +138,6 @@ export default class Overlay extends React.PureComponent {
 
   onMouseButton(e) {
     if (e.target.closest("div.header, div.footer")) return;
-
     const suppress = this.getAdditionalHandler(e, "onMouseButton");
     if (suppress) return;
 
