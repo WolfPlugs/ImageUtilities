@@ -1,4 +1,4 @@
-import { common, settings, webpack } from "replugged";
+import { common, webpack } from "replugged";
 import Patcher from "../patches/overlay";
 import getImages from "../utils/getImage";
 import lensHandler from "../utils/tools/Handlers";
@@ -8,7 +8,9 @@ const {
   lodash,
 } = common;
 const _ = lodash;
-const { wrapper } = webpack.getByProps(["wrapper", "downloadLink"]);
+const { wrapper } = await webpack.waitForModule<{
+  wrapper: string;
+}>(webpack.filters.byProps("wrapper", "downloadLink"));
 
 export default class ImageToolsOverlay extends React.PureComponent {
   private patcher: Patcher;
@@ -22,7 +24,7 @@ export default class ImageToolsOverlay extends React.PureComponent {
 
   constructor(props) {
     super(props);
-    this.images = getImages(getChannelId());
+    this.images = getImages(getChannelId() as string);
     this.state = {
       $image: null,
       currentImgIndex: null,
@@ -34,7 +36,7 @@ export default class ImageToolsOverlay extends React.PureComponent {
         return props.settings?.get("lensRadius", 100);
       },
       set radius(v) {
-        return props.settings?.set("lensRadius", v);
+        props.settings?.set("lensRadius", v);
       },
 
       get zooming() {
@@ -42,7 +44,7 @@ export default class ImageToolsOverlay extends React.PureComponent {
         return props.settings?.get("zoomRatio", 2);
       },
       set zooming(v) {
-        return props.settings?.set("zoomRatio", v);
+        props.settings?.set("zoomRatio", v);
       },
 
       get wheelStep() {
@@ -50,7 +52,7 @@ export default class ImageToolsOverlay extends React.PureComponent {
         return props.settings?.get("wheelStep", 1);
       },
       set wheelStep(v) {
-        return props.settings?.set("wheelStep", v);
+        props.settings?.set("wheelStep", v);
       },
     };
 

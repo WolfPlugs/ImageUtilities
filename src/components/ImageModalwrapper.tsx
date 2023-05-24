@@ -2,11 +2,10 @@ import { common, util, webpack } from "replugged";
 import Lens from "../utils/tools/index";
 
 const { React } = common;
-// @ts-ignore
-const { imageWrapper, imagePlaceholderOverlay } = webpack.getByProps([
-  "imageWrapper",
-  "imagePlaceholderOverlay",
-]);
+const { imageWrapper, imagePlaceholderOverlay } = await webpack.waitForModule<{
+  imageWrapper: string;
+  imagePlaceholderOverlay: string;
+}>(webpack.filters.byProps( "imageWrapper", "imagePlaceholderOverlay"));
 
 export class ImageModalWrapper extends React.PureComponent {
   props: any;
@@ -40,7 +39,7 @@ export class ImageModalWrapper extends React.PureComponent {
           className={[this.state.lensConfig.show ? "image-tools-blur-image" : ""]}
           ref={this.imgRef}
           onMouseDown={() => {
-            this.imgRef.current.click(); // чтобы скрыть меню перед линзой
+            this.imgRef.current.click();
           }}>
           {" "}
           {this.props.children}{" "}

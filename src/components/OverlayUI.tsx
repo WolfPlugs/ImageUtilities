@@ -4,9 +4,18 @@ import OverlayUITooltip from "./OverlayUITooltip";
 const { Text, Clickable, Tooltip } = components;
 const { React, lodash } = common;
 
-const { downloadLink } = webpack.getByProps(["downloadLink"]);
-const { buttons } = webpack.getByProps(["button", "buttons"]);
-const { button, sizeIcon } = webpack.getByProps(["button", "sizeIcon"]);
+const { downloadLink } = await webpack.waitForModule<{
+  downloadLink: string;
+}>(webpack.filters.byProps("downloadLink"));
+
+const { buttons } = await webpack.waitForModule<{
+  buttons: string;
+}>(webpack.filters.byProps("button", "buttons"));
+
+const { button, sizeIcon } = await webpack.waitForModule<{
+  button: string;
+  sizeIcon: string;
+}>(webpack.filters.byProps("button", "sizeIcon"));
 
 export default class ImageToolsOverlayUI extends React.PureComponent {
   state: any;

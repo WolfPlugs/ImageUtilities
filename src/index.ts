@@ -2,12 +2,16 @@ import { Injector, Logger, settings } from "replugged";
 import Patcher from "./patches/index";
 import "./style.css";
 
-const defaultSet = {
+export const defaultSet = {
   lensRadius: 0,
   zoomRatio: 0,
   wheelStep: 0,
 };
-const theSettings = await settings.init("imageUtilities", defaultSet);
+const theSettings = await settings.init<{
+  lensRadius: number;
+  zoomRatio: number;
+  wheelStep: number;
+}>("imageUtilities", defaultSet);
 
 class ImageUtilities {
   private inject = new Injector();

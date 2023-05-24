@@ -9,6 +9,7 @@ const { Tooltip, Clickable } = components;
 export default class OverlayUIToolTip extends React.PureComponent {
   state: any;
   props: any;
+  setState: any;
 
   constructor(props) {
     super(props);
@@ -34,7 +35,7 @@ export default class OverlayUIToolTip extends React.PureComponent {
   openTooltip() {
     if (this.props.error) return;
     this.setState({ text: Messages.COPIED });
-    Clipboard.copy(this.props.copyText);
+    DiscordNative.clipboard.copy(this.props.copyText);
     setTimeout(() => this.setState({ text: null }), 1000);
   }
 }
