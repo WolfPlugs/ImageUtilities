@@ -7,28 +7,52 @@ const { imageWrapper, imagePlaceholderOverlay } = await webpack.waitForModule<{
   imagePlaceholderOverlay: string;
 }>(webpack.filters.byProps( "imageWrapper", "imagePlaceholderOverlay"));
 
-export class ImageModalWrapper extends React.PureComponent {
+interface LensConfig {
+  show: boolean;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+interface ImageModalWrapperProps {
+  setUpdateLensConfig: (callback: (lensConfig: LensConfig) => void) => void;
+}
+
+interface ImageModalWrapperState {
+  lensConfig: LensConfig;
+}
+
+
+
+export class ImageModalWrapper extends React.PureComponent<ImageModalWrapperProps, ImageModalWrapperState> {
   props: any;
   state: any;
   setState: any;
   imgRef: any;
   $image: any;
 
-  constructor(props) {
+  constructor(props: ImageModalWrapperProps) {
     super(props);
     this.imgRef = React.createRef();
     this.$image = null;
     this.state = {
-      lensConfig: {},
+      lensConfig: {
+        show: false,
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+      },
     };
 
-    props.setUpdateLensConfig((lensConfig) => {
+    props.setUpdateLensConfig((lensConfig: LensConfig) => {
       this.setState({ lensConfig });
     });
   }
 
-  componentDidMount() {
-    this.updateCurrentImg();
+  async componentDidMount() {
+    await this.updateCurrentImg();
   }
 
   render() {
@@ -36,7 +60,7 @@ export class ImageModalWrapper extends React.PureComponent {
       <>
         <Lens {...this.state.lensConfig} />
         <div
-          className={[this.state.lensConfig.show ? "image-tools-blur-image" : ""]}
+          className={this.state.lensConfig.show ? "image-tools-blur-image" : ""}
           ref={this.imgRef}
           onMouseDown={() => {
             this.imgRef.current.click();
@@ -52,7 +76,7 @@ export class ImageModalWrapper extends React.PureComponent {
     this.props.set$image(await this.waitFor());
   }
 
-  async waitFor() {
+  async waitFor():  Promise<HTMLElement | null> {
     const elem = this.imgRef.current?.querySelector(`.${imageWrapper} > img, video, canvas`);
 
     if (!elem || elem?.classList?.contains(imagePlaceholderOverlay)) {

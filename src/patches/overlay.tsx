@@ -5,6 +5,16 @@ import OverlayUI from "../components/OverlayUI";
 const inject = new Injector();
 const logger = Logger.plugin("ImageUtilis | Overlay");
 
+const { downloadLink, wrapper } = await webpack.waitForModule<{
+  downloadLink: string;
+  wrapper: string;
+}>(webpack.filters.byProps("wrapper", "downloadLink"));
+
+const { image } = await webpack.waitForModule<{
+  image: string;
+}>(webpack.filters.byProps("image"));
+
+
 export default class Overlay {
   private children: any;
   private patchImageSize: boolean;
@@ -35,9 +45,7 @@ export default class Overlay {
   }
 
   imageModal(res, opts) {
-    const { downloadLink, wrapper } = webpack.getByProps(["wrapper", "downloadLink"]);
-    const { image } = webpack.getByProps(["image"]);
-    let Wrapper = findInReactTree(res, (m) => m?.props?.className === wrapper).props.children;
+    let Wrapper = findInReactTree(res, (m) => m?.props?.className === wrapper)?.props.children;
     let footers = Wrapper.findIndex(
       (m) => m?.props?.className === downloadLink || m?.props.originalFooter,
     );
@@ -47,8 +55,8 @@ export default class Overlay {
       if (!Image) return res;
 
       if (this.patchImageSize) {
-        Image.props.height *= 8;
-        Image.props.width *= 8;
+        Image.props.height *= 2;
+        Image.props.width *= 2;
         Image.props.maxHeight = (document.body.clientHeight * 70) / 100;
         Image.props.maxWidth = (document.body.clientWidth * 80) / 100;
       }

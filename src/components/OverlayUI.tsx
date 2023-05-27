@@ -17,6 +17,13 @@ const { button, sizeIcon } = await webpack.waitForModule<{
   sizeIcon: string;
 }>(webpack.filters.byProps("button", "sizeIcon"));
 
+interface HeaderButton {
+  tooltip: string;
+  callback: () => void;
+  Icon: React.ComponentType;
+}
+
+
 export default class ImageToolsOverlayUI extends React.PureComponent {
   state: any;
   props: any;
@@ -70,9 +77,11 @@ export default class ImageToolsOverlayUI extends React.PureComponent {
   }
 
   private renderHeader() {
+    const { headerButtons } = this.props;
+
     return (
       <div className={`header ${buttons}`}>
-        {this.props.headerButtons.map(({ tooltip, callback, Icon }) => (
+        {headerButtons.map(({ tooltip, callback, Icon }: HeaderButton) => (
           <Clickable onClick={callback}>
             <div className={`${button} ${sizeIcon} button`}>
               <Tooltip text={tooltip}>

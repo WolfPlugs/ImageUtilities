@@ -19,8 +19,6 @@ export default class ImageToolsOverlay extends React.PureComponent {
   private lensSettings: any;
   private lensConfig: any;
   private additionalHandler: any;
-  private setState: any;
-  private props: any;
 
   constructor(props) {
     super(props);
