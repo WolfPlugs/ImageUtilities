@@ -7,3 +7,4 @@ declare const DiscordNative: {
     read: () => string;
   };
 }
+

@@ -1,5 +1,4 @@
-import { Injector, Logger, webpack } from "replugged";
-import { findInReactTree } from "../utils/find";
+import { Injector, Logger, webpack, util } from "replugged";
 import { ImageModalWrapper } from "../components/ImageModalwrapper";
 import OverlayUI from "../components/OverlayUI";
 const inject = new Injector();
@@ -45,8 +44,8 @@ export default class Overlay {
   }
 
   imageModal(res, opts) {
-    let Wrapper = findInReactTree(res, (m) => m?.props?.className === wrapper)?.props.children;
-    let footers = Wrapper.findIndex(
+    let Wrapper = util.findInReactTree(res, (m) => m?.props?.className === wrapper)?.props.children;
+    let footers = Wrapper?.findIndex(
       (m) => m?.props?.className === downloadLink || m?.props.originalFooter,
     );
     let Image = res?.props?.children?.[1];
@@ -75,7 +74,7 @@ export default class Overlay {
   }
 
   patchModalLayer(modalLayer) {
-    const ModalLayer = findInReactTree(this.children, ({ props }) => props?.render);
+    const ModalLayer = util.findInReactTree(this.children, ({ props }) => props?.render);
 
     inject.after(ModalLayer.props, "render", (args, res) => {
       res.props.children = (
