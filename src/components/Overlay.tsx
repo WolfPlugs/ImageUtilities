@@ -228,6 +228,6 @@ export default class ImageToolsOverlay extends React.PureComponent {
   }
 
   updateUI(data) {
-    this.state.sendDataToUI(data);
+    this.state?.sendDataToUI?.(data);
   }
 }

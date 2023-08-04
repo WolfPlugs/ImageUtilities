@@ -153,7 +153,7 @@ export default class ImageToolsButton extends React.PureComponent {
           label={item.name}
           {...item}
           {...this.getExtraItemsProperties(image, item.id)}
-        /> 
+        />
       );
   }
 
@@ -197,31 +197,32 @@ export default class ImageToolsButton extends React.PureComponent {
       // },
       searchImage: {
         children: [
-          ...this.imageSearchEngines.map((e) => (<MenuItem
-            id={e}
-            key={e}
-            label={e.name}
-            subtext={(allowSubText) ? e.note : null}
-            action={() => openLink(e.url, e.withoutEncode)}
-          />)),
+          ...this.imageSearchEngines.map((e) => (
+            <MenuItem
+              id={e.name}
+              key={e.name}
+              label={e.name}
+              subtext={(allowSubText) ? e.note : null}
+              action={() => openLink(e.url, e.withoutEncode)}
+            />
+          )),
           <MenuItem
             id={"shit-o"}
             key={"shit-o"}
-            color={'danger'}
-            label={Messages.IMAGE_TOOLS_SEARCH_EVERYWHERE}
+            color='danger'
+            label='Search everywhere'
             action={() => this.imageSearchEngines.forEach(({ url, withoutEncode }) => openLink(url, withoutEncode))} />
 
         ],
       }
     };
 
-     return {
+    return {
        action: () => Actions[id](image.src, {
-         downloadPath: defaultSaveDir,
-         original
-       }),
-       ...data[id]
-     };
+          original
+        }),
+      ...data[id]
+    };
   }
 
   getAction(arr, id) {

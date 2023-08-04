@@ -5,12 +5,12 @@ export default [
   {
     type: 'button',
     id: 'open-image',
-    get name () { return Messages.IMAGE_TOOLS_OPEN_IMAGE; }
+    get name () { return "Open Image"; }
   },
   {
     type: 'button',
     id: 'copy-image',
-    get name () { return Messages.IMAGE_TOOLS_COPY_IMAGE; }
+    get name () { return 'Copy Image'; }
   },
   {
     type: 'button',
@@ -30,7 +30,7 @@ export default [
   {
     type: 'button',
     id: 'save-as',
-    get name () { return Messages.IMAGE_TOOLS_SAVE_IMAGE_AS; }
+    get name () { return "Save Image As..."; }
   },
   {
     type: 'submenu',

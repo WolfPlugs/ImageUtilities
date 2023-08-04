@@ -1,31 +1,29 @@
 import { common, components, i18n, webpack } from "replugged"
 
 const { Modal: { ModalRoot } } = components
-const { i18n: { Messages } } = common
+const { i18n: { Messages }, modal: { openModal } } = common
 
-const openImageModal = webpack.getFunctionBySource(webpack.getBySource(".MEDIA_MODAL_CLOSE,"), ".MEDIA_MODAL_CLOSE,")
+const ImageModal = webpack.getFunctionBySource(webpack.getBySource(".MEDIA_MODAL_CLOSE,"), ".MEDIA_MODAL_CLOSE,")
 const { modal, image } = webpack.getByProps(['modal', 'image'])
-const { openModal } = webpack.getByProps(['openModal'])
-const { Anchor } = webpack.getByProps(['Anchor'])
+const MaskedLink = webpack.getBySource(".MASKED_LINK)")
 
 export default ({ original, src, width, height, stickerAssets }) => {
-  openModal((props) =>
+  openModal(props =>
     <ModalRoot
       className={modal}
       size='dynamic'
       aria-label={Messages.Image}
-      children={
-        <openImageModal
-          className={image}
-          src={src} height={height}
-          width={width}
-          renderLinkComponent={(p) => <Anchor {...p} />}
-          original={original || src}
-          stickerAssets={stickerAssets}
-        />
-      }
       {...props}
-    />
+    >
+      <ImageModal
+        className={image}
+        shouldAnimate={true}
+        src={src}
+        renderLinkComponent={(p) => <MaskedLink {...p} />}
+        original={original || src}
+        stickerAssets={stickerAssets}
+      />
+    </ModalRoot>
   )
 
 }
