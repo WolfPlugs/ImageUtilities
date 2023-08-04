@@ -74,28 +74,21 @@ export default class MainPatch {
   }
 
   private getContextMenus(menus: any) {
-    console.log(menus)
     this.inject.utils.addMenuItem(ContextMenuTypes.UserContext, (data, menu) => {
-      return <MenuItem
-        id="image-utils"
-        label="Image Utils"
-        action={() => menus.userContext(data, menu, this.settings)}
-      >
-      
-      </MenuItem>
+    //console.log("Sus", menus.userContext(data, menu, this.settings))
+      return menus.userContext(data, menu, this.settings);
+      // return <MenuItem
+      //   id="image-utils"
+      //   label="Seggs Utils"
+      //   children={(props) => menus.userContext(props, data, menu, this.settings)}
+      // >
+      // </MenuItem>
     })
 
   }
 
   get contextMenuPatches() {
-    const memorizeRender = initMemorizeRender();
 
-    function initButton(menu, args) {
-      const btn = Button.render(args);
-      memorizeRender.cache.clear();
-
-      console.log(menu, args, btn)
-    }
     // this.inject.utils.addMenuItem(ContextMenuTypes.Message, (data, menu) => {
     //   return <MenuItem
     //     id="image-utils"
@@ -110,7 +103,7 @@ export default class MainPatch {
     // })
     return {
       UserContext(data, res, settings) {
-        console.log(data, res, settings)
+        // console.log(data, res, settings)
         if (!data?.user) {
           return res;
         }
@@ -138,8 +131,7 @@ export default class MainPatch {
             gif:  isAnimatedIconHash(user.avatar) ? { src: getUserAvatarURL(user, true, 2048) } : null
           }
         };
-        initButton.call(this, res, { images, settings })
-        return res;
+        return Button.render({ images, settings });
       }
       
     }

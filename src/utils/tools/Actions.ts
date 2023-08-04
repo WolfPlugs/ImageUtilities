@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-extraneous-class */
-import { webpack, common  } from 'replugged'
+import { webpack, common, util } from 'replugged'
+import openImageModal from '../openImageModal';
 // import { nativeImage } from 'electron'
 const { toast, api } = common
 
@@ -13,6 +14,10 @@ export default class Actions {
       ...defaultArgs,
       ...args
     });
+  }
+
+  public static openLink (url, { original }) {
+    util.openExternal(original || url);
   }
 
   public static copyImage (url, params) {
