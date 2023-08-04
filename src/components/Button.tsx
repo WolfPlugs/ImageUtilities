@@ -82,7 +82,6 @@ export default class ImageToolsButton extends React.PureComponent {
 
     const prioritySort = priority.filter((e) => this.getItems().includes(e));
     const actionId = this.props.settings.get('defaultAction', 'open-image');
-    console.log("ud", actionId)
     res2.props.action = this.getAction(prioritySort, actionId);
 
     const saveImageBtn = findInReactTree(res2, ({ props }) => props?.id === 'save');
