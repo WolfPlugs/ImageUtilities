@@ -1,55 +1,54 @@
-import { webpack, common } from 'replugged';
+import { common, webpack } from "replugged";
 
-const { toast } = common
-const { showToast, ToastType } = webpack.getByProps(['createToast', 'showToast'])
+const { toast } = common;
+const { showToast, ToastType } = webpack.getByProps(["createToast", "showToast"]);
 
 class outputManager {
-  public constructor (startID = '') {
+  public constructor(startID = "") {
     this._startID = startID;
   }
 
-  public setStartId (id) {
+  public setStartId(id) {
     this._startID = id;
   }
 
-  public successToast (message) {
+  public successToast(message) {
     showToast({
       type: ToastType.SUCCESS,
-      message
+      message,
     });
   }
 
-  public errorToast (message) {
+  public errorToast(message) {
     showToast({
       type: ToastType.FAILURE,
-      message
+      message,
     });
   }
 
-  public error (msg, addButton = {}) {
+  public error(msg, addButton = {}) {
     const buttons = [
       {
-        text: 'okay',
-        color: 'red',
-        size: (addButton) ? 'small' : 'medium',
-        look: 'outlined'
-      }
+        text: "okay",
+        color: "red",
+        size: addButton ? "small" : "medium",
+        look: "outlined",
+      },
     ];
     if (Object.keys(addButton).length) {
       buttons.push(addButton);
     }
-    this._main(msg, 'danger', buttons);
+    this._main(msg, "danger", buttons);
   }
 
-  public _main (content, type, buttons) {
+  public _main(content, type, buttons) {
     const id = Math.random().toString(10).substr(2);
     toast.toast(`${this._startID}-${id}`, {
-      header: 'Image Tools',
+      header: "Image Tools",
       timeout: 4e3,
       content,
       type,
-      buttons
+      buttons,
     });
   }
-
 }

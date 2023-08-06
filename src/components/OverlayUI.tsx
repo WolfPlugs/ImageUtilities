@@ -23,7 +23,6 @@ interface HeaderButton {
   Icon: React.ComponentType;
 }
 
-
 export default class ImageToolsOverlayUI extends React.PureComponent {
   state: any;
   props: any;

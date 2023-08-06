@@ -6,5 +6,4 @@ declare const DiscordNative: {
     paste: () => void;
     read: () => string;
   };
-}
-
+};

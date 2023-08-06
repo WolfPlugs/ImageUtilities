@@ -12,7 +12,6 @@ interface Borders {
   wheelStep: [number, number];
 }
 
-
 export default new (class LensHandlers {
   public onMouseButton(e: MouseEvent): { show: boolean } {
     const res = { show: false };
@@ -23,7 +22,7 @@ export default new (class LensHandlers {
     return res;
   }
 
-  public onMouseMove(e: MouseEvent): { positionX: number, positionY: number } {
+  public onMouseMove(e: MouseEvent): { positionX: number; positionY: number } {
     return {
       positionX: e.clientX,
       positionY: e.clientY,
@@ -35,12 +34,12 @@ export default new (class LensHandlers {
       const [min] = borders[target];
       const step = target === "wheelStep" ? min : current.wheelStep * min;
       const plus = e.deltaY < 0 ? step : step * -1;
-  
+
       return {
         [target]: fixConfines(Number(current[target]) + plus, borders[target]),
       };
     };
-  
+
     if (e.ctrlKey) {
       return change("radius");
     } else if (e.shiftKey) {

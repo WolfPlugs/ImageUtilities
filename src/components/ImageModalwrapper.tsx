@@ -5,7 +5,7 @@ const { React } = common;
 const { imageWrapper, imagePlaceholderOverlay } = await webpack.waitForModule<{
   imageWrapper: string;
   imagePlaceholderOverlay: string;
-}>(webpack.filters.byProps( "imageWrapper", "imagePlaceholderOverlay"));
+}>(webpack.filters.byProps("imageWrapper", "imagePlaceholderOverlay"));
 
 interface LensConfig {
   show: boolean;
@@ -23,9 +23,10 @@ interface ImageModalWrapperState {
   lensConfig: LensConfig;
 }
 
-
-
-export class ImageModalWrapper extends React.PureComponent<ImageModalWrapperProps, ImageModalWrapperState> {
+export class ImageModalWrapper extends React.PureComponent<
+  ImageModalWrapperProps,
+  ImageModalWrapperState
+> {
   props: any;
   state: any;
   setState: any;
@@ -76,7 +77,7 @@ export class ImageModalWrapper extends React.PureComponent<ImageModalWrapperProp
     this.props.set$image(await this.waitFor());
   }
 
-  async waitFor():  Promise<HTMLElement | null> {
+  async waitFor(): Promise<HTMLElement | null> {
     const elem = this.imgRef.current?.querySelector(`.${imageWrapper} > img, video, canvas`);
 
     if (!elem || elem?.classList?.contains(imagePlaceholderOverlay)) {
