@@ -69,27 +69,17 @@ export default class ImageToolsButton extends React.PureComponent {
       <MenuItem
         {...this.btnId}
         children={this.getSubMenuItems(this.props.images)}
-
       ></MenuItem>
-    // const res = {
-    //   ...this.btnId,
-    //   type: 'submenu',
-    //   items: this.getSubMenuItems(this.props.images),
-    //   getItems() {
-    //     return this.items;
-    //   }
-    // }
 
     const prioritySort = priority.filter((e) => this.getItems().includes(e));
     const actionId = this.props.settings.get('defaultAction', 'open-image');
     res2.props.action = this.getAction(prioritySort, actionId);
 
-    const saveImageBtn = findInReactTree(res2, ({ props }) => props?.id === 'save');
-    //console.log(res2)
-    if (saveImageBtn) {
-      saveImageBtn.props.action = this.getAction(prioritySort, 'save');
-    }
-    //console.log(res2)
+    // const saveImageBtn = findInReactTree(res2, ({ props }) => props?.id === 'save');
+    // if (saveImageBtn) {
+    //   saveImageBtn.props.action = this.getAction(prioritySort, 'save');
+    // }
+
     return res2;
   }
 
@@ -100,9 +90,10 @@ export default class ImageToolsButton extends React.PureComponent {
       }
       images = images.default;
     }
+
     const items = this.getItems(images);
 
-    if (items.length > 1) {
+    if (items.length >= 1) {
       return items.map((e) => (
         <MenuItem
           key={e}
@@ -134,7 +125,8 @@ export default class ImageToolsButton extends React.PureComponent {
           />))
           : []
         )
-      ]} </MenuItem>,
+      ]}
+      </MenuItem>,
       <MenuItem
         key={'user-avatar'}
         id={'user-avatar'}
@@ -218,9 +210,9 @@ export default class ImageToolsButton extends React.PureComponent {
     };
 
     return {
-       action: () => Actions[id](image.src, {
-          original
-        }),
+      action: () => Actions[id](image.src, {
+        original
+      }),
       ...data[id]
     };
   }
