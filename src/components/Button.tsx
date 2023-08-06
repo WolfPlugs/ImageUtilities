@@ -74,7 +74,6 @@ export default class ImageToolsButton extends React.PureComponent {
     const prioritySort = priority.filter((e) => this.getItems().includes(e));
     const actionId = this.props.settings.get('defaultAction', 'open-image');
     res2.props.action = this.getAction(prioritySort, actionId);
-
     // const saveImageBtn = findInReactTree(res2, ({ props }) => props?.id === 'save');
     // if (saveImageBtn) {
     //   saveImageBtn.props.action = this.getAction(prioritySort, 'save');
@@ -87,6 +86,13 @@ export default class ImageToolsButton extends React.PureComponent {
     if (images.guildAvatars) {
       if (images.guildAvatars.length > 0) {
         return this.getGuildAvatarsMenu()
+      }
+      images = images.default;
+    }
+
+    if (images.guildBanner) {
+      if (Object.keys(images.guildBanner[0]).length > 0) {
+        return this.getGuildBannerMenu()
       }
       images = images.default;
     }
@@ -106,6 +112,31 @@ export default class ImageToolsButton extends React.PureComponent {
         // }
       ));
     }
+  }
+
+  getGuildBannerMenu() {
+    return [
+      <MenuItem
+        key={'guild-banner'}
+        id={'guild-banner'}
+        label={'Guild Banner'}
+      >{[
+        this.getSubMenuItems(this.props.images.guildBanner[0]),
+        // <MenuItem
+        //   id={'lo'}
+        //   key={'llol'}
+        //   label={'lol'}
+        //   children={this.getSubMenuItems(this.props.images.guildBanner[0])}
+        //     />
+      ]}
+      </MenuItem>,
+      <MenuItem
+        key={'guild-icon'}
+        id={'guild-icon'}
+        label={'Guild Icon'}
+        children={this.getSubMenuItems(this.props.images.default)}
+      />
+    ];
   }
 
   getGuildAvatarsMenu() {

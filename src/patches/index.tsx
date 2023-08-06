@@ -12,7 +12,7 @@ const { image } = await webpack.waitForModule<{
   image: string;
 }>(webpack.filters.byProps("image", "modal", "responsiveWidthMobile"));
 
-const { getChannelIconURL, getGuildIconURL, getGuildMemberAvatarURL, getUserAvatarURL, isAnimatedIconHash } = webpack.getByProps(['getUserAvatarURL'])
+const { getGuildBannerURL, getChannelIconURL, getGuildIconURL, getGuildMemberAvatarURL, getUserAvatarURL, isAnimatedIconHash } = webpack.getByProps(['getUserAvatarURL'])
 const initMemorizeRender = () => window._.memoize((render, patch) => (...renderArgs) => (
   patch(render(...renderArgs))
 ));
@@ -144,6 +144,7 @@ export default class MainPatch {
       },
 
       GuildContext(data, res, settings) {
+        let url, e
         const params = {
           id: data.guild.id,
           icon: data.guild.icon,
@@ -151,13 +152,30 @@ export default class MainPatch {
           canAnimate: false
         }
 
-        const images = {
-          png: { src: getGuildIconURL(params)?.replace('.webp?', '.png?') },
-          webp: { src: getGuildIconURL(params) },
-          gif: isAnimatedIconHash(data.guild.icon) ? { src: getGuildIconURL({ ...params, canAnimate: true }) } : null
+
+        let images = {
+          default: {
+            png: { src: getGuildIconURL(params)?.replace('.webp?', '.png?') },
+            webp: { src: getGuildIconURL(params) },
+            gif: isAnimatedIconHash(data.guild.icon) ? { src: getGuildIconURL({ ...params, canAnimate: true }) } : null
+          },
+          guildBanner: [{}]
+
         };
 
-        if (images.webp.src) {
+        if (data.guild.banner) {
+          url = new URL(getGuildBannerURL(data.guild))
+          e = url.pathname.split('.').pop()
+          images.guildBanner = [{
+            [e]: {
+              src: fixUrlSize(url.href),
+              widht: 2048,
+              height: 918,
+            }
+          }]
+        }
+
+        if (images.default.webp.src) {
           return Button.render({ images, settings });
         }
       },
@@ -179,7 +197,7 @@ export default class MainPatch {
       },
 
       GdmContext(data, res, settings) {
-        const [ src ] = getChannelIconURL(data.channel).split('?');
+        const [src] = getChannelIconURL(data.channel).split('?');
         const link = src.startsWith("http") ? src : `https://discord.com${src}`;
         const images = {
           png: { src: link.endsWith(".webp") ? link.replace('.webp', '.png') : link },
