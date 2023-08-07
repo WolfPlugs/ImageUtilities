@@ -22,6 +22,8 @@ export default class ImageToolsOverlay extends React.PureComponent {
 
   constructor(props) {
     super(props);
+    const get = props.settings.get.bind(props.settings);
+    const set = props.settings.set.bind(props.settings);
     this.images = getImages(getChannelId() as string);
     this.state = {
       $image: null,
@@ -30,27 +32,24 @@ export default class ImageToolsOverlay extends React.PureComponent {
 
     this.lensSettings = {
       get radius() {
-        if (props.settings?.get("lensRadius") === 0) return props.settings?.set("lensRadius", 100);
-        return props.settings?.get("lensRadius", 100);
+        return get("lensRadius", 100);
       },
       set radius(v) {
-        props.settings?.set("lensRadius", v);
+        set("lensRadius", v);
       },
 
       get zooming() {
-        if (props.settings?.get("zoomRatio") === 0) return props.settings?.set("zoomRatio", 2);
-        return props.settings?.get("zoomRatio", 2);
+        return get("zoomRatio", 2);
       },
       set zooming(v) {
-        props.settings?.set("zoomRatio", v);
+        set("zoomRatio", v);
       },
 
       get wheelStep() {
-        if (props.settings?.get("wheelStep") === 0) return props.settings?.set("wheelStep", 1);
-        return props.settings?.get("wheelStep", 1);
+        return get("wheelStep", 1);
       },
       set wheelStep(v) {
-        props.settings?.set("wheelStep", v);
+        set("wheelStep", v);
       },
     };
 
@@ -73,6 +72,8 @@ export default class ImageToolsOverlay extends React.PureComponent {
         },
       },
     };
+
+
     const injectOptions = {
       modalLayer: {
         set$image: this.updateCurrentImg.bind(this),

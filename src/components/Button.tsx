@@ -5,15 +5,14 @@ import Actions from "../utils/tools/Actions";
 import buttonStructure from "../structures/button";
 
 import imageSearchEngines from "../utils/imageSearchEngines.json";
+import CustomContextMenu from "../patches/ContextMenu";
 
 const { findInReactTree } = util;
 const {
   React,
   i18n: { Messages },
 } = common;
-const {
-  ContextMenu: { MenuItem },
-} = components;
+
 const priority = ["gif", "mp4", "png", "jpg", "webp"];
 
 export default class ImageToolsButton extends React.PureComponent {
@@ -21,15 +20,15 @@ export default class ImageToolsButton extends React.PureComponent {
   disabledActions: any;
   disabledISE: any;
   imageSearchEngines: (
-    | { name: string; url: string; note: string; withoutEncode?: undefined }
-    | { name: string; url: string; note?: undefined; withoutEncode?: undefined }
+    | { name: string; url: string; note: string; withoutEncode: undefined }
+    | { name: string; url: string; note: undefined; withoutEncode: undefined }
     | { name: string; url: string; note: string; withoutEncode: boolean }
   )[];
 
   constructor(props) {
     super(props);
 
-    this.btnId = { id: "image-tools-button", label: Messages.IMAGE };
+    this.btnId = { id: "image-tools-button", name: Messages.IMAGE };
     this.disabledISE = props.settings.get("disabledImageSearchEngines", []);
     this.disabledActions = props.settings.get("disabledActions", []);
     this.imageSearchEngines = imageSearchEngines.filter(({ name }) => {
@@ -41,6 +40,33 @@ export default class ImageToolsButton extends React.PureComponent {
   static render(props) {
     const itb = new ImageToolsButton(props);
     return itb.renderContextMenu();
+  }
+
+  static renderSticker(id, settings) {
+    const itb = new ImageToolsButton({ settings });
+    // const { getStickerAssetUrl } = getModule([ 'getStickerAssetUrl' ], false);
+    itb.disabledActions = ['copy-image', 'open-link', 'copy-link', 'save-as', 'search-image'];
+
+    const [res] = CustomContextMenu.renderRawItems([{
+      ...itb.btnId,
+      type: 'submenu',
+      items: itb.getBaseMenu({
+        stickerAssets: {
+          size: 320,
+          sticker: {
+            id,
+            format_type: 3
+          }
+        },
+        src: getStickerAssetUrl({ format_type: 3, id })
+      }, []),
+      getItems() {
+        return this.items;
+      }
+    }]);
+    res.props.action = findInReactTree(res, ({ props }) => props?.action).props.action;
+
+    return res;
   }
 
   get disabled() {
@@ -69,19 +95,24 @@ export default class ImageToolsButton extends React.PureComponent {
   }
 
   renderContextMenu() {
-    const res2 = (
-      <MenuItem {...this.btnId} children={this.getSubMenuItems(this.props.images)}></MenuItem>
-    );
+    const [res] = CustomContextMenu.renderRawItems([{
+      ...this.btnId,
+      type: 'submenu',
+      items: this.getSubMenuItems(this.props.images, this.disabledActions),
+      getItems() {
+        return this.items;
+      }
+    }])
 
     const prioritySort = priority.filter((e) => this.getItems().includes(e));
     const actionId = this.props.settings.get("defaultAction", "open-image");
-    res2.props.action = this.getAction(prioritySort, actionId);
+    res.props.action = this.getAction(prioritySort, actionId);
     // const saveImageBtn = findInReactTree(res2, ({ props }) => props?.id === 'save');
     // if (saveImageBtn) {
     //   saveImageBtn.props.action = this.getAction(prioritySort, 'save');
     // }
 
-    return res2;
+    return res;
   }
 
   getSubMenuItems(images: any) {
@@ -102,81 +133,89 @@ export default class ImageToolsButton extends React.PureComponent {
     const items = this.getItems(images);
 
     if (items.length >= 1) {
-      return items.map((e) => (
-        <MenuItem
-          key={e}
-          id={`sub-${e}`}
-          label={e.toUpperCase()}
-          children={this.getBaseMenu(images[e], this.getDisabledMethods(e))}
-        />
-        // getItems() {
-        //   return this.items;
-        // }
-      ));
+      return items.map((e) => ({
+        type: "submenu",
+        id: `sub-${e}`,
+        name: e.toUpperCase(),
+        items: this.getBaseMenu(images[e], this.getDisabledMethods(e)),
+        getItems() {
+          return this.items;
+        },
+      }));
     }
   }
 
   getGuildBannerMenu() {
     return [
-      <MenuItem key={"guild-banner"} id={"guild-banner"} label={"Guild Banner"}>
-        {[
-          this.getSubMenuItems(this.props.images.guildBanner[0]),
-          // <MenuItem
-          //   id={'lo'}
-          //   key={'llol'}
-          //   label={'lol'}
-          //   children={this.getSubMenuItems(this.props.images.guildBanner[0])}
-          //     />
-        ]}
-      </MenuItem>,
-      <MenuItem
-        key={"guild-icon"}
-        id={"guild-icon"}
-        label={"Guild Icon"}
-        children={this.getSubMenuItems(this.props.images.default)}
-      />,
+      { 
+        type: "submenu",
+        id: "guild-banner",
+        name: "Guild Banner",
+        items: this.getSubMenuItems(this.props.images.guildBanner[0]),
+        getItems() {
+          return this.items;
+        }
+      },
+      {
+        type: "submenu",
+        id: "guild-icon",
+        name: "Guild Icon",
+        items: this.getSubMenuItems(this.props.images.default),
+        
+        getItems() {
+          return this.items;
+        }
+      },
     ];
   }
 
   getGuildAvatarsMenu() {
     return [
-      <MenuItem key={"guild-avatar"} id={"guild-avatar"} label={Messages.PER_GUILD_AVATAR}>
-        {[
+      {
+        type: 'submenu',
+        id: 'guild-avatar',
+        name: Messages.PER_GUILD_AVATAR,
+        items: [
           ...(this.props.images.isCurrentGuild
             ? this.getSubMenuItems(this.props.images.guildAvatars.shift())
             : []),
           ...(this.props.images.guildAvatars.length > 0
-            ? this.props.images.guildAvatars.map(({ guildName }, i) => (
-                <MenuItem
-                  id={guildName}
-                  key={guildName}
-                  label={guildName}
-                  children={this.getSubMenuItems(this.props.images.guildAvatars[i])}
-                />
-              ))
+            ? this.props.images.guildAvatars.map(({ guildName }, i) => ({
+              type: 'submenu',
+              name: guildName,
+              items: this.getSubMenuItems(this.props.images.guildAvatars[i]),
+              getItems() {
+                return this.items;
+              }
+            }))
             : []),
-        ]}
-      </MenuItem>,
-      <MenuItem
-        key={"user-avatar"}
-        id={"user-avatar"}
-        label={Messages.PROFILE}
-        children={this.getSubMenuItems(this.props.images.default)}
-      />,
+        ],
+        getItems() {
+          return this.items;
+        }
+      },
+      {
+        type: 'submenu',
+        id: 'user-avatar',
+        name: Messages.PROFILE,
+        items: this.getSubMenuItems(this.props.images.default),
+        getItems() {
+          return this.items;
+        }
+      },
     ];
   }
 
   getBaseMenu(image, disabled) {
+
     return buttonStructure
       .filter(({ id }) => !this.disabledActions.includes(id))
-      .map((item) => (
-        <MenuItem
-          disabled={disabled.includes(item.id)}
-          label={item.name}
-          {...item}
-          {...this.getExtraItemsProperties(image, item.id)}
-        />
-      ));
+      .map((item) => ({
+        disabled: disabled.includes(item.id),
+        name: item.name,
+        ...item,
+        ...this.getExtraItemsProperties(image, item.id)
+      }));
   }
 
   getExtraItemsProperties(image, snakeId) {
@@ -218,27 +257,25 @@ export default class ImageToolsButton extends React.PureComponent {
       // },
       searchImage: {
         children: [
-          ...this.imageSearchEngines.map((e) => (
-            <MenuItem
-              id={e.name}
-              key={e.name}
-              label={e.name}
-              subtext={allowSubText ? e.note : null}
-              action={() => openLink(e.url, e.withoutEncode)}
-            />
-          )),
-          <MenuItem
-            id={"shit-o"}
-            key={"shit-o"}
-            color="danger"
-            label="Search everywhere"
-            action={() =>
+          ...this.imageSearchEngines.map((e) => ({
+            type: "button",
+            name: e.name,
+            subtext: allowSubText ? e.note : null,
+            action: () => openLink(e.url, e.withoutEncode)
+          })),
+          {
+            type: "button",
+            color: "danger",
+            name: "Search everywhere",
+            action: () =>
               this.imageSearchEngines.forEach(({ url, withoutEncode }) =>
                 openLink(url, withoutEncode),
               )
-            }
-          />,
+          }
         ],
+        getItems() {
+          return this.children;
+        }
       },
     };
 

@@ -3,6 +3,7 @@ import Overlay from "../components/Overlay";
 import { defaultSet } from "..";
 import { ModuleExports } from "replugged/dist/types";
 import Button from "../components/Button";
+import LensSettings from "../utils/tools/Settings";
 
 const {
   ContextMenu: { MenuItem },
@@ -54,6 +55,7 @@ export default class MainPatch {
       guildContext: this.contextMenuPatches.GuildContext,
       imageContext: this.contextMenuPatches.ImageContext,
       gdmContext: this.contextMenuPatches.GdmContext,
+      messageContext: this.contextMenuPatches.MessageContext,
     });
   }
 
@@ -101,23 +103,73 @@ export default class MainPatch {
     this.inject.utils.addMenuItem(ContextMenuTypes.GdmContext, (data, menu) => {
       return menus.gdmContext(data, menu, this.settings);
     });
+
+    // this.inject.utils.addMenuItem(ContextMenuTypes.Message, (data, menu) => {
+    //   return menus.messageContext(data, menu, this.settings);
+    // });
   }
 
   get contextMenuPatches() {
-    // this.inject.utils.addMenuItem(ContextMenuTypes.Message, (data, menu) => {
-    //   return <MenuItem
-    //     id="image-utils"
-    //     label="Image Utils"
-    //     action={() => console.log(data)}
-    //   >
+    const memorizeRewnder = initMemorizeRender();
 
-    //   </MenuItem>
-    // })
+    function initButton(menu, args) {
+      const btn = Button.render(args);
+      memorizeRewnder.cache.clear();
 
-    // })
+      if (Array.isArray(menu)) {
+        menu.splice(menu.length - 1, 0, btn);
+      } else {
+        menu.type = memorizeRewnder(menu.type, (res: any) => {
+          res.props.children.splice(res.props.children.length - 1, 0, btn);
+          return res;
+        })
+      }
+      //return menu;
+    }
+
     return {
+      MessageContext(data, res, settings) {
+        const stickerItems = data?.message?.stickerItems;
+        const content = data?.message?.content;
+        const target = data?.data[0]?.target;
+        if ((target.tagName === 'IMG') || (target.getAttribute('data-role') === 'img') || (target.getAttribute('data-type') === 'sticker' && stickerItems.length)) {
+          const { width, height } = target;
+          const menu = res.children;
+          const hideNativeButtons = settings.get('hideNativeButtons', true);
+
+          if (hideNativeButtons) {
+            for (let i = menu.length - 1; i >= 0; i -= 1) {
+              const e = menu[i];
+              if (Array.isArray(e?.props?.children) && e?.props?.children[0]) {
+                if (e.props.children[0].key === 'copy-image' || e.props.children[0].key === 'copy-native-link') {
+                  menu.splice(i, 1);
+                }
+              }
+            }
+          }
+
+          if (target.tagName === 'CANVAS') {
+            menu.splice(menu.length - 1, 0, Button.renderSticker(stickerItems[0].id, settings));
+          } else {
+            const [ e, src ] = getImage(target);
+           initButton(menu, {
+              images: {
+                [e]: {
+                  src,
+                  original: isUrl(content) ? content : null,
+                  width: width * 2,
+                  height: height * 2
+                }
+              },
+              settings
+            });
+          }
+        
+        }
+        return res;
+      },
+
       UserContext(data, res, settings) {
-        // console.log(data, res, settings)
         if (!data?.user) {
           return res;
         }
@@ -168,7 +220,7 @@ export default class MainPatch {
           },
         };
 
-        return Button.render({ images, settings });
+        return initButton.call(this, res.children, { images, settings });
       },
 
       GuildContext(data, res, settings) {
@@ -206,8 +258,9 @@ export default class MainPatch {
         }
 
         if (images.default.webp.src) {
-          return Button.render({ images, settings });
+          return initButton(res.children, { images, settings });
         }
+        return res
       },
 
       ImageContext(data, res, settings) {
@@ -221,11 +274,13 @@ export default class MainPatch {
           button,
           (res: any) => res.props?.id === "open-image",
         );
+
         openImage.props.disabled = true;
         res.children = [
           ...button.props.children,
-          //...LensSettings.render(settings)
+          ...LensSettings.render(settings)
         ];
+
         return res;
       },
 
@@ -237,7 +292,7 @@ export default class MainPatch {
           webp: { src: link.endsWith(".png") ? link.replace(".png", ".webp") : link },
         };
 
-        return Button.render({ images, settings });
+        return initButton(res.children, { images, settings });
       },
     };
   }
@@ -254,6 +309,15 @@ function getImage(target) {
     }
   }
   return [e, src];
+}
+
+function isUrl (string) {
+  try {
+    new URL(string);
+  } catch {
+    return false;
+  }
+  return true;
 }
 
 function fixUrlSize(url) {
