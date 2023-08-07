@@ -150,8 +150,9 @@ export default class MainPatch {
           if (target.tagName === 'CANVAS') {
             menu.splice(menu.length - 1, 0, Button.renderSticker(stickerItems[0].id, settings));
           } else {
-            const [ e, src ] = getImage(target);
-           initButton(menu, {
+            const [e, src] = getImage(target);
+            if (e === 'svg') return
+            initButton(menu, {
               images: {
                 [e]: {
                   src,
@@ -163,7 +164,7 @@ export default class MainPatch {
               settings
             });
           }
-        
+
         }
         //return res;
       },
@@ -201,11 +202,11 @@ export default class MainPatch {
             },
             gif: isAnimatedIconHash(avatar)
               ? {
-                  src: getGuildMemberAvatarURL(
-                    { ...guildMemberAvatarURLParams, guildMemberAvatar: avatar },
-                    true,
-                  ),
-                }
+                src: getGuildMemberAvatarURL(
+                  { ...guildMemberAvatarURLParams, guildMemberAvatar: avatar },
+                  true,
+                ),
+              }
               : null,
           })),
           default: {
@@ -310,7 +311,7 @@ function getImage(target) {
   return [e, src];
 }
 
-function isUrl (string) {
+function isUrl(string) {
   try {
     new URL(string);
   } catch {
