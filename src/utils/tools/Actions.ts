@@ -10,6 +10,7 @@ export default class Actions {
       height: 1024,
       width: 1024,
     };
+    console.log(args)
     openImageModal({
       ...defaultArgs,
       ...args,

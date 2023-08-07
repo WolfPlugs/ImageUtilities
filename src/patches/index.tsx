@@ -104,9 +104,9 @@ export default class MainPatch {
       return menus.gdmContext(data, menu, this.settings);
     });
 
-    // this.inject.utils.addMenuItem(ContextMenuTypes.Message, (data, menu) => {
-    //   return menus.messageContext(data, menu, this.settings);
-    // });
+    this.inject.utils.addMenuItem(ContextMenuTypes.Message, (data, menu) => {
+      return menus.messageContext(data, menu, this.settings);
+    });
   }
 
   get contextMenuPatches() {
@@ -147,7 +147,6 @@ export default class MainPatch {
               }
             }
           }
-
           if (target.tagName === 'CANVAS') {
             menu.splice(menu.length - 1, 0, Button.renderSticker(stickerItems[0].id, settings));
           } else {
@@ -166,7 +165,7 @@ export default class MainPatch {
           }
         
         }
-        return res;
+        //return res;
       },
 
       UserContext(data, res, settings) {

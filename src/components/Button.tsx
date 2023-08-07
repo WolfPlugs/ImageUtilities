@@ -44,9 +44,8 @@ export default class ImageToolsButton extends React.PureComponent {
 
   static renderSticker(id, settings) {
     const itb = new ImageToolsButton({ settings });
-    // const { getStickerAssetUrl } = getModule([ 'getStickerAssetUrl' ], false);
-    itb.disabledActions = ['copy-image', 'open-link', 'copy-link', 'save-as', 'search-image'];
 
+    itb.disabledActions = ['copy-image', 'open-link', 'copy-link', 'save-as', 'search-image'];
     const [res] = CustomContextMenu.renderRawItems([{
       ...itb.btnId,
       type: 'submenu',
@@ -58,14 +57,13 @@ export default class ImageToolsButton extends React.PureComponent {
             format_type: 3
           }
         },
-        src: getStickerAssetUrl({ format_type: 3, id })
+        src: `https://media.discordapp.com/stickers/${id}.png?passtrough=true`
       }, []),
       getItems() {
         return this.items;
       }
     }]);
     res.props.action = findInReactTree(res, ({ props }) => props?.action).props.action;
-
     return res;
   }
 
@@ -107,7 +105,7 @@ export default class ImageToolsButton extends React.PureComponent {
     const prioritySort = priority.filter((e) => this.getItems().includes(e));
     const actionId = this.props.settings.get("defaultAction", "open-image");
     res.props.action = this.getAction(prioritySort, actionId);
-    // const saveImageBtn = findInReactTree(res2, ({ props }) => props?.id === 'save');
+    // const saveImageBtn = findInReactTree(res, (m: any) => m.props?.id === "save-image");
     // if (saveImageBtn) {
     //   saveImageBtn.props.action = this.getAction(prioritySort, 'save');
     // }
@@ -147,7 +145,7 @@ export default class ImageToolsButton extends React.PureComponent {
 
   getGuildBannerMenu() {
     return [
-      { 
+      {
         type: "submenu",
         id: "guild-banner",
         name: "Guild Banner",
@@ -161,7 +159,7 @@ export default class ImageToolsButton extends React.PureComponent {
         id: "guild-icon",
         name: "Guild Icon",
         items: this.getSubMenuItems(this.props.images.default),
-        
+
         getItems() {
           return this.items;
         }
@@ -212,7 +210,7 @@ export default class ImageToolsButton extends React.PureComponent {
       .filter(({ id }) => !this.disabledActions.includes(id))
       .map((item) => ({
         disabled: disabled.includes(item.id),
-        name: item.name,
+        //name: item.name,
         ...item,
         ...this.getExtraItemsProperties(image, item.id)
       }));

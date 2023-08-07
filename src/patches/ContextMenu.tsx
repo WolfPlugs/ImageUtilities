@@ -53,6 +53,7 @@ export default class CustomContextMenu extends React.PureComponent {
   }
 
   renderItems(items, ctx) {
+    
     return items.map(item => {
       ctx.i++;
       switch (item.type) {
@@ -84,11 +85,10 @@ export default class CustomContextMenu extends React.PureComponent {
         hint={item.hint}
         subtext={item.subtext}
         action={() => {
-          console.log(item)
           if (item.disabled) {
             waitFor('#app-mount > div[class] > div').then(app => getOwnerInstance(app).shake(600, 5));
-          } else if (item.onClick) {
-            item.onClick();
+          } else if (item.action) {
+            item.action();
           }
         }}
       />
