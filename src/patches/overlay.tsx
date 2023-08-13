@@ -53,10 +53,13 @@ export default class Overlay {
       if (!Image) return res;
 
       if (this.patchImageSize) {
-        Image.props.height *= 2;
-        Image.props.width *= 2;
-        Image.props.maxHeight = (document.body.clientHeight * 70) / 100;
-        Image.props.maxWidth = (document.body.clientWidth * 80) / 100;
+        const img = res.props;
+        const { height, width } = img;
+
+        img.height = height * 2;
+        img.width = width * 2;
+        img.maxHeight = (document.body.clientHeight * 70) / 100;
+        img.maxWidth = (document.body.clientWidth * 80) / 100;
       }
       if (Image.type.isAnimated({ original: Image.props.src })) {
         Image.props.animated = true;
@@ -69,6 +72,7 @@ export default class Overlay {
         originalFooter={Wrapper[footers]?.props?.originalFooter ?? Wrapper[footers]}
         {...opts.overlayUI}></OverlayUI>
     );
+
     return res;
   }
 

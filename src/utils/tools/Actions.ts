@@ -10,7 +10,6 @@ export default class Actions {
       height: 1024,
       width: 1024,
     };
-    console.log(args)
     openImageModal({
       ...defaultArgs,
       ...args,
@@ -22,7 +21,10 @@ export default class Actions {
   }
 
   public static copyLink(url, { original }) {
-    console.log(original || url);
+    DiscordNative.clipboard.copy(original || url)
+    // .then(() => {
+    //   toast.toast("Link copied", toast.Kind.SUCCESS);
+    // });
   }
 
   public static copyImage(url, params) {
@@ -34,10 +36,7 @@ export default class Actions {
       .catch(() =>
         Actions._fetchImage(url)
           .then((res) => {
-            DiscordNative.clipboard
-              .copyImage
-              // nativeImage.createFromBuffer(res)
-              ();
+            DiscordNative.clipboard.copyImage(res);
             toast.toast("Image copied", toast.Kind.SUCCESS);
           })
           .catch((e) => {
