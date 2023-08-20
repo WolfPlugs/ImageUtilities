@@ -53,7 +53,7 @@ export default class MainPatch {
         // eslint-disable-next-line no-return-assign
         return this.overlay(...args, () => (this.modalIsOpen = true));
       },
-    );
+    ); 
     this.getContextMenus({
       userContext: this.contextMenuPatches.UserContext,
       guildContext: this.contextMenuPatches.GuildContext,
@@ -121,10 +121,10 @@ export default class MainPatch {
       memorizeRewnder.cache.clear();
 
       if (Array.isArray(menu)) {
-        menu.splice(menu.length - 1, 0, btn);
+        menu.splice(menu.length - 1, 0, ...btn);
       } else {
         menu.type = memorizeRewnder(menu.type, (res: any) => {
-          res.props.children.splice(res.props.children.length - 1, 0, btn);
+          res.props.children.splice(res.props.children.length - 1, 0, ...btn);
           return res;
         })
       }
@@ -200,9 +200,7 @@ export default class MainPatch {
 
         const images = {
           isCurrentGuild,
-          streamPreview: stream ? {
-            png: previewUrl
-          }  : null, 
+          streamPreview: stream && previewUrl.startsWith("https://") ? previewUrl : null, 
           guildAvatars: guildMemberAvatars.map(([guildId, avatar]) => ({
             guildName: guilds.getGuild(guildId).name,
             png: {
@@ -237,7 +235,6 @@ export default class MainPatch {
               : null,
           },
         };
-
         return initButton.call(this, res.children, { images, settings });
       },
 
