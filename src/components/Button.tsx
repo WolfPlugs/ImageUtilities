@@ -114,11 +114,23 @@ export default class ImageToolsButton extends React.PureComponent {
   }
 
   getSubMenuItems(images: any) {
-    if (images.guildAvatars) {
+    if (images.guildAvatars && !images.streamPreview) {
       if (images.guildAvatars.length > 0) {
         return this.getGuildAvatarsMenu();
       }
       images = images.default;
+    }
+
+    if (images.guildAvatars && images.streamPreview) {
+      console.log(images)
+      if (images?.guildAvatars?.length > 0) {
+        return [...this.getUserStreamMenu(), ...this.getGuildAvatarsMenu()];
+      }
+      images = images.default;
+    }
+
+    if (!images.guildAvatars && images.streamPreview) {
+        return this.getUserStreamMenu();
     }
 
     if (images.guildBanner) {
@@ -197,6 +209,20 @@ export default class ImageToolsButton extends React.PureComponent {
         id: 'user-avatar',
         name: Messages.PROFILE,
         items: this.getSubMenuItems(this.props.images.default),
+        getItems() {
+          return this.items;
+        }
+      },
+    ];
+  }
+
+  getUserStreamMenu() {
+    return [
+      {
+        type: 'submenu',
+        id: 'stream-preview',
+        name: "Stream Preview",
+        items: this.getSubMenuItems([this.props.images.streamPreview]),
         getItems() {
           return this.items;
         }

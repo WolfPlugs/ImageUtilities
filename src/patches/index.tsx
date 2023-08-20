@@ -9,7 +9,7 @@ const {
   ContextMenu: { MenuItem },
 } = components;
 const { ContextMenuTypes } = types;
-const { React, guilds } = common;
+const { React, guilds, flux } = common;
 
 const { image } = await webpack.waitForModule<{
   image: string;
@@ -23,6 +23,10 @@ const {
   getUserAvatarURL,
   isAnimatedIconHash,
 } = webpack.getByProps(["getUserAvatarURL"]);
+
+const ApplicationStreamingStore = webpack.getByStoreName("ApplicationStreamingStore");
+const ApplicationStreamPreviewStore = webpack.getByStoreName("ApplicationStreamPreviewStore");
+
 const initMemorizeRender = () =>
   window._.memoize(
     (render, patch) =>
@@ -182,9 +186,23 @@ export default class MainPatch {
         if (isCurrentGuild) {
           guildMemberAvatars.splice(0, 0, guildMemberAvatars.splice(currentGuildId, 1)[0]);
         }
+        
+         const [stream, previewUrl] = flux.useStateFromStores([ApplicationStreamingStore, ApplicationStreamPreviewStore], () => {
+            const stream = ApplicationStreamingStore.getAnyStreamForUser(user.id);
+            const previewUrl = stream && ApplicationStreamPreviewStore.getPreviewURL(
+                stream.guildId,
+                stream.channelId,
+                stream.ownerId
+            );
+
+          return [stream, previewUrl];
+        });
 
         const images = {
           isCurrentGuild,
+          streamPreview: stream ? {
+            png: previewUrl
+          }  : null, 
           guildAvatars: guildMemberAvatars.map(([guildId, avatar]) => ({
             guildName: guilds.getGuild(guildId).name,
             png: {
@@ -294,6 +312,10 @@ export default class MainPatch {
 
         return initButton(res.children, { images, settings });
       },
+
+      StreamContext(data, res, settings) {
+        
+      }
     };
   }
 }
