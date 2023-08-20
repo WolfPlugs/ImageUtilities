@@ -81,7 +81,7 @@ export default class ImageToolsButton extends React.PureComponent {
     images = images || this.props.images.default || this.props.images;
     const lowPriorityExtensions = this.props.settings.get("lowPriorityExtensions", []);
     const baseExtensions = Object.keys(images)
-      .filter((e) => images[e] && priority.includes(e))
+      .filter((e) => images[e] && priority.includes(e) && images !== "streamPreview")
       .sort((a, b) => priority.indexOf(a) - priority.indexOf(b));
 
     return baseExtensions.reduceRight((acc, e, i) => {
@@ -93,7 +93,7 @@ export default class ImageToolsButton extends React.PureComponent {
   }
 
   renderContextMenu() {
-    const [res] = CustomContextMenu.renderRawItems([{
+    const res = CustomContextMenu.renderRawItems([this.props.images.streamPreview ? this.getStreamMenuItem() : null, {
       ...this.btnId,
       type: 'submenu',
       items: this.getSubMenuItems(this.props.images, this.disabledActions),
@@ -101,10 +101,10 @@ export default class ImageToolsButton extends React.PureComponent {
         return this.items;
       }
     }])
-
+    const images = this.props.images.streamPreview ? res[1] : res[0]
     const prioritySort = priority.filter((e) => this.getItems().includes(e));
     const actionId = this.props.settings.get("defaultAction", "open-image");
-    res.props.action = this.getAction(prioritySort, actionId);
+    images.props.action = this.getAction(prioritySort, actionId);
     // const saveImageBtn = findInReactTree(res, (m: any) => m.props?.id === "save-image");
     // if (saveImageBtn) {
     //   saveImageBtn.props.action = this.getAction(prioritySort, 'save');
@@ -114,23 +114,11 @@ export default class ImageToolsButton extends React.PureComponent {
   }
 
   getSubMenuItems(images: any) {
-    if (images.guildAvatars && !images.streamPreview) {
+    if (images.guildAvatars) {
       if (images.guildAvatars.length > 0) {
         return this.getGuildAvatarsMenu();
       }
       images = images.default;
-    }
-
-    if (images.guildAvatars && images.streamPreview) {
-      console.log(images)
-      if (images?.guildAvatars?.length > 0) {
-        return [...this.getUserStreamMenu(), ...this.getGuildAvatarsMenu()];
-      }
-      images = images.default;
-    }
-
-    if (!images.guildAvatars && images.streamPreview) {
-        return this.getUserStreamMenu();
     }
 
     if (images.guildBanner) {
@@ -216,18 +204,13 @@ export default class ImageToolsButton extends React.PureComponent {
     ];
   }
 
-  getUserStreamMenu() {
-    return [
-      {
-        type: 'submenu',
-        id: 'stream-preview',
-        name: "Stream Preview",
-        items: this.getSubMenuItems([this.props.images.streamPreview]),
-        getItems() {
-          return this.items;
-        }
-      },
-    ];
+  getStreamMenuItem() {
+    return {
+        type: 'button',
+        id: 'open-stream-preview',
+        name: "Open Stream Preview",
+        action: () => Actions.openImage({src: this.props.images.streamPreview}),
+      };
   }
 
   getBaseMenu(image, disabled) {

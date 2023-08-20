@@ -6,7 +6,7 @@ import Button from "../components/Button";
 import LensSettings from "../utils/tools/Settings";
 
 const {
-  ContextMenu: { MenuItem },
+  ContextMenu: { MenuGroup },
 } = components;
 const { ContextMenuTypes } = types;
 const { React, guilds, flux } = common;
@@ -121,12 +121,12 @@ export default class MainPatch {
       memorizeRewnder.cache.clear();
 
       if (Array.isArray(menu)) {
-        menu.splice(menu.length - 1, 0, btn);
+        menu.splice(menu.length - 1, 0, ...btn);
       } else {
         menu.type = memorizeRewnder(menu.type, (res: any) => {
-          res.props.children.splice(res.props.children.length - 1, 0, btn);
+          res.props.children.splice(res.props.children.length - 1, 0, ...btn);
           return res;
-        })
+        });
       }
       //return menu;
     }
@@ -136,39 +136,45 @@ export default class MainPatch {
         const stickerItems = data?.message?.stickerItems;
         const content = data?.message?.content;
         const target = data?.data[0]?.target;
-        if ((target.tagName === 'IMG') || (target.getAttribute('data-role') === 'img') || (target.getAttribute('data-type') === 'sticker' && stickerItems.length)) {
+        if (
+          target.tagName === "IMG" ||
+          target.getAttribute("data-role") === "img" ||
+          (target.getAttribute("data-type") === "sticker" && stickerItems.length)
+        ) {
           const { width, height } = target;
           const menu = res.children;
-          const hideNativeButtons = settings.get('hideNativeButtons', true);
+          const hideNativeButtons = settings.get("hideNativeButtons", true);
 
           if (hideNativeButtons) {
             for (let i = menu.length - 1; i >= 0; i -= 1) {
               const e = menu[i];
               if (Array.isArray(e?.props?.children) && e?.props?.children[0]) {
-                if (e.props.children[0].key === 'copy-image' || e.props.children[0].key === 'copy-native-link') {
+                if (
+                  e.props.children[0].key === "copy-image" ||
+                  e.props.children[0].key === "copy-native-link"
+                ) {
                   menu.splice(i, 1);
                 }
               }
             }
           }
-          if (target.tagName === 'CANVAS') {
+          if (target.tagName === "CANVAS") {
             menu.splice(menu.length - 1, 0, Button.renderSticker(stickerItems[0].id, settings));
           } else {
             const [e, src] = getImage(target);
-            if (e === 'svg') return
+            if (e === "svg") return;
             initButton(menu, {
               images: {
                 [e]: {
                   src,
                   original: isUrl(content) ? content : null,
                   width: width * 2,
-                  height: height * 2
-                }
+                  height: height * 2,
+                },
               },
-              settings
+              settings,
             });
           }
-
         }
         //return res;
       },
@@ -186,23 +192,26 @@ export default class MainPatch {
         if (isCurrentGuild) {
           guildMemberAvatars.splice(0, 0, guildMemberAvatars.splice(currentGuildId, 1)[0]);
         }
-        
-         const [stream, previewUrl] = flux.useStateFromStores([ApplicationStreamingStore, ApplicationStreamPreviewStore], () => {
+
+        const [stream, previewUrl] = flux.useStateFromStores(
+          [ApplicationStreamingStore, ApplicationStreamPreviewStore],
+          () => {
             const stream = ApplicationStreamingStore.getAnyStreamForUser(user.id);
-            const previewUrl = stream && ApplicationStreamPreviewStore.getPreviewURL(
+            const previewUrl =
+              stream &&
+              ApplicationStreamPreviewStore.getPreviewURL(
                 stream.guildId,
                 stream.channelId,
-                stream.ownerId
-            );
+                stream.ownerId,
+              );
 
-          return [stream, previewUrl];
-        });
+            return [stream, previewUrl];
+          },
+        );
 
         const images = {
           isCurrentGuild,
-          streamPreview: stream ? {
-            png: previewUrl
-          }  : null, 
+          streamPreview: stream && previewUrl.startsWith("https://") ? previewUrl : null,
           guildAvatars: guildMemberAvatars.map(([guildId, avatar]) => ({
             guildName: guilds.getGuild(guildId).name,
             png: {
@@ -220,11 +229,11 @@ export default class MainPatch {
             },
             gif: isAnimatedIconHash(avatar)
               ? {
-                src: getGuildMemberAvatarURL(
-                  { ...guildMemberAvatarURLParams, guildMemberAvatar: avatar },
-                  true,
-                ),
-              }
+                  src: getGuildMemberAvatarURL(
+                    { ...guildMemberAvatarURLParams, guildMemberAvatar: avatar },
+                    true,
+                  ),
+                }
               : null,
           })),
           default: {
@@ -237,7 +246,6 @@ export default class MainPatch {
               : null,
           },
         };
-
         return initButton.call(this, res.children, { images, settings });
       },
 
@@ -278,7 +286,7 @@ export default class MainPatch {
         if (images.default.webp.src) {
           return initButton(res.children, { images, settings });
         }
-        return res
+        return res;
       },
 
       ImageContext(data, res, settings) {
@@ -294,12 +302,10 @@ export default class MainPatch {
         );
 
         openImage.props.disabled = true;
-        res.children = [
-          ...button.props.children,
-          ...LensSettings.render(settings)
-        ];
-
-        return res;
+        console.log([...button, ...LensSettings.render(settings)])
+        console.log("button", button);
+        console.log("len", LensSettings.render(settings))
+        res.children = [<MenuGroup children={[...button, ...LensSettings.render(settings)]}></MenuGroup>];
       },
 
       GdmContext(data, res, settings) {
@@ -313,9 +319,7 @@ export default class MainPatch {
         return initButton(res.children, { images, settings });
       },
 
-      StreamContext(data, res, settings) {
-        
-      }
+      StreamContext(data, res, settings) {},
     };
   }
 }

@@ -54,7 +54,7 @@ export default class CustomContextMenu extends React.PureComponent {
 
   renderItems(items, ctx) {
     
-    return items.map(item => {
+    return items.filter(Boolean).map(item => {
       ctx.i++;
       switch (item.type) {
         case 'button':
