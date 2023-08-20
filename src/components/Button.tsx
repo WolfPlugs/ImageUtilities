@@ -81,7 +81,7 @@ export default class ImageToolsButton extends React.PureComponent {
     images = images || this.props.images.default || this.props.images;
     const lowPriorityExtensions = this.props.settings.get("lowPriorityExtensions", []);
     const baseExtensions = Object.keys(images)
-      .filter((e) => images[e] && priority.includes(e))
+      .filter((e) => images[e] && priority.includes(e) && images !== "streamPreview")
       .sort((a, b) => priority.indexOf(a) - priority.indexOf(b));
 
     return baseExtensions.reduceRight((acc, e, i) => {
