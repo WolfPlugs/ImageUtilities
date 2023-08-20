@@ -38,6 +38,7 @@ export default class ImageToolsButton extends React.PureComponent {
   }
 
   static render(props) {
+    console.log(props)
     const itb = new ImageToolsButton(props);
     return itb.renderContextMenu();
   }
@@ -93,7 +94,7 @@ export default class ImageToolsButton extends React.PureComponent {
   }
 
   renderContextMenu() {
-    const res = CustomContextMenu.renderRawItems([this.props.images.streamPreview ? this.getStreamMenuItem() : null, {
+    const [res] = CustomContextMenu.renderRawItems([{
       ...this.btnId,
       type: 'submenu',
       items: this.getSubMenuItems(this.props.images, this.disabledActions),
@@ -101,15 +102,14 @@ export default class ImageToolsButton extends React.PureComponent {
         return this.items;
       }
     }])
-    const images = this.props.images.streamPreview ? res[1] : res[0]
+
     const prioritySort = priority.filter((e) => this.getItems().includes(e));
     const actionId = this.props.settings.get("defaultAction", "open-image");
-    images.props.action = this.getAction(prioritySort, actionId);
+    res.props.action = this.getAction(prioritySort, actionId);
     // const saveImageBtn = findInReactTree(res, (m: any) => m.props?.id === "save-image");
     // if (saveImageBtn) {
     //   saveImageBtn.props.action = this.getAction(prioritySort, 'save');
     // }
-
     return res;
   }
 
@@ -226,9 +226,9 @@ export default class ImageToolsButton extends React.PureComponent {
   }
 
   getExtraItemsProperties(image, snakeId) {
+
     const id = camelCaseify(snakeId);
     const { src, original } = image;
-
     //const saveImageDirs = this.props.settings.get('saveImageDirs', []);
 
     const allowSubText = !this.props.settings.get("hideHints", false);

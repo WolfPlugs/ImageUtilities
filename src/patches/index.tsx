@@ -5,9 +5,6 @@ import { ModuleExports } from "replugged/dist/types";
 import Button from "../components/Button";
 import LensSettings from "../utils/tools/Settings";
 
-const {
-  ContextMenu: { MenuGroup },
-} = components;
 const { ContextMenuTypes } = types;
 const { React, guilds, flux } = common;
 
@@ -121,10 +118,10 @@ export default class MainPatch {
       memorizeRewnder.cache.clear();
 
       if (Array.isArray(menu)) {
-        menu.splice(menu.length - 1, 0, ...btn);
+        menu.splice(menu.length - 1, 0, btn);
       } else {
         menu.type = memorizeRewnder(menu.type, (res: any) => {
-          res.props.children.splice(res.props.children.length - 1, 0, ...btn);
+          res.props.children.splice(res.props.children.length - 1, 0, btn);
           return res;
         });
       }
@@ -208,10 +205,10 @@ export default class MainPatch {
             return [stream, previewUrl];
           },
         );
-
+        
         const images = {
           isCurrentGuild,
-          streamPreview: stream && previewUrl.startsWith("https://") ? previewUrl : null,
+          //streamPreview: stream && previewUrl.startsWith("https://") ? previewUrl : null,
           guildAvatars: guildMemberAvatars.map(([guildId, avatar]) => ({
             guildName: guilds.getGuild(guildId).name,
             png: {
@@ -301,11 +298,10 @@ export default class MainPatch {
           (res: any) => res.props?.id === "open-image",
         );
 
+
         openImage.props.disabled = true;
-        console.log([...button, ...LensSettings.render(settings)])
-        console.log("button", button);
-        console.log("len", LensSettings.render(settings))
-        res.children = [<MenuGroup children={[...button, ...LensSettings.render(settings)]}></MenuGroup>];
+        res.children = [...button.props.children, ...LensSettings.render(settings)];
+        
       },
 
       GdmContext(data, res, settings) {
@@ -319,7 +315,7 @@ export default class MainPatch {
         return initButton(res.children, { images, settings });
       },
 
-      StreamContext(data, res, settings) {},
+      //StreamContext(data, res, settings) {},
     };
   }
 }
