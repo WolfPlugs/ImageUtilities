@@ -190,21 +190,21 @@ export default class MainPatch {
           guildMemberAvatars.splice(0, 0, guildMemberAvatars.splice(currentGuildId, 1)[0]);
         }
 
-        const [stream, previewUrl] = flux.useStateFromStores(
-          [ApplicationStreamingStore, ApplicationStreamPreviewStore],
-          () => {
-            const stream = ApplicationStreamingStore.getAnyStreamForUser(user.id);
-            const previewUrl =
-              stream &&
-              ApplicationStreamPreviewStore.getPreviewURL(
-                stream.guildId,
-                stream.channelId,
-                stream.ownerId,
-              );
+        // const [stream, previewUrl] = flux.useStateFromStores(
+        //   [ApplicationStreamingStore, ApplicationStreamPreviewStore],
+        //   () => {
+        //     const stream = ApplicationStreamingStore.getAnyStreamForUser(user.id);
+        //     const previewUrl =
+        //       stream &&
+        //       ApplicationStreamPreviewStore.getPreviewURL(
+        //         stream.guildId,
+        //         stream.channelId,
+        //         stream.ownerId,
+        //       );
 
-            return [stream, previewUrl];
-          },
-        );
+        //     return [stream, previewUrl];
+        //   },
+        // );
         
         const images = {
           isCurrentGuild,

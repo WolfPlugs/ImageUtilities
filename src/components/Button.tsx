@@ -38,7 +38,6 @@ export default class ImageToolsButton extends React.PureComponent {
   }
 
   static render(props) {
-    console.log(props)
     const itb = new ImageToolsButton(props);
     return itb.renderContextMenu();
   }
