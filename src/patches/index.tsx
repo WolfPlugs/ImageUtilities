@@ -247,6 +247,7 @@ export default class MainPatch {
       },
 
       GuildContext(data, res, settings) {
+        console.log(data)
         let url, e;
         const params = {
           id: data.guild.id,
@@ -258,7 +259,7 @@ export default class MainPatch {
         let images = {
           default: {
             png: { src: getGuildIconURL(params)?.replace(".webp?", ".png?") },
-            webp: { src: getGuildIconURL(params) },
+            webp: { src: data.guild.icon ? getGuildIconURL(params) : null },
             gif: isAnimatedIconHash(data.guild.icon)
               ? { src: getGuildIconURL({ ...params, canAnimate: true }) }
               : null,
@@ -283,7 +284,6 @@ export default class MainPatch {
         if (images.default.webp.src) {
           return initButton(res.children, { images, settings });
         }
-        return res;
       },
 
       ImageContext(data, res, settings) {
