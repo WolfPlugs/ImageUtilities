@@ -16,10 +16,12 @@
   ],
   "version": "1.0.3",
   "updater": {
-    "type": "github",
-    "id": "wolfplugs/ImageUtilities"
+    "type": "store",
+    "id": "dev.wolfplugs.ImageUtilities"
   },
   "license": "MIT",
   "type": "replugged-plugin",
+  "source": "https://github.com/WolfPlugs/ImageUtilities",
+  "image": "https://i.imgur.com/SpHmm3M.png",
   "renderer": "src/index.ts"
 }
