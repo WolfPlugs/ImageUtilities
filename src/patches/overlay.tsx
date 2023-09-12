@@ -33,14 +33,14 @@ export default class Overlay {
     inject.uninjectAll();
   }
 
-  imageRender(res) {
-    // console.log(findInReactTree(res, ({ props }) => props))
-    // const Video = findInReactTree(res, ({ m }) => m?.props?.alt === 'Video');
-    // if (Video) {
-    //   Video.props.play = true;
-    // }
-    // return res;
-  }
+  // imageRender(res) {
+  //   // console.log(findInReactTree(res, ({ props }) => props))
+  //   // const Video = findInReactTree(res, ({ m }) => m?.props?.alt === 'Video');
+  //   // if (Video) {
+  //   //   Video.props.play = true;
+  //   // }
+  //   // return res;
+  // }
 
   imageModal(res, opts) {
     let Wrapper = util.findInReactTree(res, (m) => m?.props?.className === wrapper)?.props.children;

@@ -247,7 +247,6 @@ export default class MainPatch {
       },
 
       GuildContext(data, res, settings) {
-        console.log(data)
         let url, e;
         const params = {
           id: data.guild.id,
