@@ -73,7 +73,6 @@ export default class ImageToolsOverlay extends React.PureComponent {
       },
     };
 
-
     const injectOptions = {
       modalLayer: {
         set$image: this.updateCurrentImg.bind(this),

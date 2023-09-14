@@ -69,9 +69,7 @@ export default class MainPatch {
     const nativeModalChildren = util.findInReactTree(res, (m: any) => m?.props?.render);
     try {
       tree = nativeModalChildren?.props?.render();
-    } catch (error) {
-      this.logger.error(error);
-    }
+    } catch {}
 
     if (tree) {
       if (util.findInReactTree(tree, (m: any) => m.props?.className === image)) {
@@ -321,7 +319,7 @@ export default class MainPatch {
 }
 
 function getImage(target) {
-  const src = (target.src).split("?").shift();
+  const src = (target.tagName === "A" ? target.href : target.src).split("?").shift();
   let e = src.substr(src.lastIndexOf(".") + 1, src.length);
   if (e.length > 3) {
     if (src.endsWith("/mp4")) {
