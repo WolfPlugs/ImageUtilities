@@ -32,7 +32,7 @@ const initMemorizeRender = () =>
   );
 export default class MainPatch {
   private inject = new Injector();
-  private logger = Logger.plugin("ImageUtilis | Overlay");
+  private logger = Logger.plugin("ImageUtilis | Index");
   private settings: keyof typeof defaultSet;
   private modalIsOpen: boolean;
 
@@ -320,7 +320,7 @@ export default class MainPatch {
 }
 
 function getImage(target) {
-  const src = (target.tagName === "IMG" ? target.src : target.href).split("?").shift();
+  const src = (target.src).split("?").shift();
   let e = src.substr(src.lastIndexOf(".") + 1, src.length);
   if (e.length > 3) {
     if (src.endsWith("/mp4")) {
