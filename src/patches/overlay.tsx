@@ -61,9 +61,11 @@ export default class Overlay {
         img.maxHeight = (document.body.clientHeight * 70) / 100;
         img.maxWidth = (document.body.clientWidth * 80) / 100;
       }
-      if (Image.type.isAnimated({ original: Image.props.src })) {
-        Image.props.animated = true;
-      }
+
+      // if (Image.type.isAnimated({ original: Image.props.src })) {
+      //   Image.props.animated = true;
+      // }
+
       opts.lensConfig.children = Image;
     }
 

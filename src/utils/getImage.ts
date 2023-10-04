@@ -24,5 +24,6 @@ export default function (channelId: string): void {
       );
     }
   });
+
   return results;
 }
