@@ -57,11 +57,14 @@ export class ImageModalWrapper extends React.PureComponent<
         <div
           className={this.state.lensConfig.show ? "image-tools-blur-image" : ""}
           ref={this.imgRef}
+          style={{ cursor: "pointer" }}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
           onMouseDown={() => {
             this.imgRef.current.click();
           }}>
-          {" "}
-          {this.props.children}{" "}
+          {this.props.children}
         </div>
       </>
     );
@@ -73,7 +76,6 @@ export class ImageModalWrapper extends React.PureComponent<
 
   async waitFor(): Promise<HTMLElement | null> {
     const elem = this.imgRef.current?.querySelector(`.${imageWrapper} > img, video, canvas`);
-
     if (!elem || elem?.classList?.contains(imagePlaceholderOverlay)) {
       await util.sleep(5);
       return this.waitFor();

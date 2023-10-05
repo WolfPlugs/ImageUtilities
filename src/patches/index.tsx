@@ -66,13 +66,26 @@ export default class MainPatch {
 
   private overlay(args: unknown[], res: JSX.Element, settings: keyof typeof defaultSet) {
     let tree;
-    const nativeModalChildren = util.findInReactTree(res, (m: any) => m?.props?.render);
+    const nativeModalChildren = util.findInReactTree(
+      res,
+      (m: any) =>
+        m?.props?.render?.toString?.()?.includes("Messages.IMAGE") ||
+        m?.props?.render?.toString?.()?.includes("modalCarouselClassName"),
+    );
     try {
       tree = nativeModalChildren?.props?.render();
     } catch {}
-
     if (tree) {
-      if (util.findInReactTree(tree, (m: any) => m.props?.className === image)) {
+      if (
+        util.findInReactTree(
+          tree,
+          (m: any) =>
+            m?.type?.toString?.()?.includes(".Messages.OPEN_IN_BROWSER") ||
+            m?.props?.items?.some((i) =>
+              i?.component?.type?.toString?.()?.includes(".Messages.OPEN_IN_BROWSER"),
+            ),
+        )
+      ) {
         res = <Overlay children={res} settings={settings}></Overlay>;
       }
     }
@@ -203,7 +216,7 @@ export default class MainPatch {
         //     return [stream, previewUrl];
         //   },
         // );
-        
+
         const images = {
           isCurrentGuild,
           //streamPreview: stream && previewUrl.startsWith("https://") ? previewUrl : null,
@@ -246,7 +259,7 @@ export default class MainPatch {
 
       GuildContext(data, res, settings) {
         let url, e;
-        console.log(data)
+        console.log(data);
         const params = {
           id: data?.guild?.id,
           icon: data?.guild?.icon,
@@ -296,10 +309,8 @@ export default class MainPatch {
           (res: any) => res.props?.id === "open-image",
         );
 
-
         openImage.props.disabled = true;
         res.children = [...button.props.children, ...LensSettings.render(settings)];
-        
       },
 
       GdmContext(data, res, settings) {

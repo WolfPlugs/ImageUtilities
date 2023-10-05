@@ -1,9 +1,9 @@
-import { Injector, Logger, webpack, util } from "replugged";
+import { Injector, Logger, webpack, util, common } from "replugged";
 import { ImageModalWrapper } from "../components/ImageModalwrapper";
 import OverlayUI from "../components/OverlayUI";
 const inject = new Injector();
 const logger = Logger.plugin("ImageUtilis | Overlay");
-
+const { React } = common;
 const { downloadLink, wrapper } = await webpack.waitForModule<{
   downloadLink: string;
   wrapper: string;
@@ -79,13 +79,36 @@ export default class Overlay {
   }
 
   patchModalLayer(modalLayer) {
-    const ModalLayer = util.findInReactTree(this.children, ({ props }) => props?.render);
+    const ModalLayer = util.findInReactTree(
+      this.children,
+      ({ props }) =>
+        props?.render?.toString?.()?.includes("Messages.IMAGE") ||
+        props?.render?.toString?.()?.includes("modalCarouselClassName"),
+    );
+
+    if (!ModalLayer) return;
 
     inject.after(ModalLayer.props, "render", (args, res) => {
-      res.props.children = (
-        <ImageModalWrapper {...modalLayer}>{res.props.children}</ImageModalWrapper>
-      );
+      if (res?.props?.items?.length) {
+        for (const item of res?.props?.items) {
+          if (!item?.component?.type?.toString()?.includes("lensConfig")) {
+            item.component = (
+              <ImageModalWrapper {...modalLayer}>{item.component}</ImageModalWrapper>
+            );
+          }
+        }
+      } else {
+        if (!res?.props?.children?.type?.toString()?.includes("lensConfig")) {
+          res.props.children = (
+            <ImageModalWrapper {...modalLayer}>{res.props.children}</ImageModalWrapper>
+          );
+        }
+      }
       return res;
     });
+    if (!ModalLayer.props.patched) {
+      ModalLayer._owner.updateQueue.baseState.children = {};
+      ModalLayer.props.patched = true;
+    }
   }
 }

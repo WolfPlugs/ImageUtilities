@@ -73,6 +73,12 @@ export default class ImageToolsOverlay extends React.PureComponent {
       },
     };
 
+    this.additionalHandler = {};
+
+    _.bindAll(this, ["onMouseMove", "onMouseDown", "onMouseButton", "onWheel"]);
+  }
+  componentDidUpdate(): void {
+    this.patcher = new Patcher(this.props.settings, this.props.children);
     const injectOptions = {
       modalLayer: {
         set$image: this.updateCurrentImg.bind(this),
@@ -95,15 +101,34 @@ export default class ImageToolsOverlay extends React.PureComponent {
         },
       },
     };
-
-    this.patcher = new Patcher(props.settings, props.children);
     this.patcher.start(injectOptions);
-
-    this.additionalHandler = {};
-
-    _.bindAll(this, ["onMouseMove", "onMouseDown", "onMouseButton", "onWheel"]);
   }
-
+  componentDidMount(): void {
+    this.patcher = new Patcher(this.props.settings, this.props.children);
+    const injectOptions = {
+      modalLayer: {
+        set$image: this.updateCurrentImg.bind(this),
+        setUpdateLensConfig: (callback) => {
+          this.setState(
+            (prevState) => Object.assign({}, prevState, { updateLensConfig: callback }),
+            () => {
+              this.state.updateLensConfig("");
+            },
+          );
+        },
+      },
+      imageModalRender: {
+        lensConfig: this.lensConfig,
+        overlayUI: {
+          headerButtons: this.getButtons(),
+          sendDataToUI: (callback) => {
+            this.setState((prevState) => Object.assign({}, prevState, { sendDataToUI: callback }));
+          },
+        },
+      },
+    };
+    this.patcher.start(injectOptions);
+  }
   public render() {
     return (
       <div
