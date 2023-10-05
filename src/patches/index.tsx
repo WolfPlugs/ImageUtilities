@@ -66,11 +66,15 @@ export default class MainPatch {
 
   private overlay(args: unknown[], res: JSX.Element, settings: keyof typeof defaultSet) {
     let tree;
-    const nativeModalChildren = util.findInReactTree(res, (m: any) => m?.props?.render);
+    const nativeModalChildren = util.findInReactTree(
+      res,
+      (m: any) =>
+        m?.props?.render?.toString?.()?.includes("Messages.IMAGE") ||
+        m?.props?.render?.toString?.()?.includes("modalCarouselClassName"),
+    );
     try {
       tree = nativeModalChildren?.props?.render();
     } catch {}
-
     if (tree) {
       if (
         util.findInReactTree(
