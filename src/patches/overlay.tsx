@@ -80,11 +80,34 @@ export default class Overlay {
 
   patchModalLayer(modalLayer) {
     const ModalLayer = util.findInReactTree(this.children, ({ props }) => props?.render);
-
     inject.after(ModalLayer.props, "render", (args, res) => {
-      res.props.children = (
-        <ImageModalWrapper {...modalLayer}>{res.props.children}</ImageModalWrapper>
-      );
+      if (res?.props?.items?.length) {
+        for (const item of res?.props?.items) {
+          if (!item?.component?.type?.toString()?.includes("lensConfig")) {
+            item.component = (
+              <ImageModalWrapper {...modalLayer}>{item.component}</ImageModalWrapper>
+            );
+          }
+        }
+        /*     inject.after(res, "type", (args, res) => {
+          res.props.children = (
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}>
+              {res.props.children}
+            </div>
+          );
+          return res;
+        }); */
+      } else {
+        if (!res?.props?.children?.type?.toString()?.includes("lensConfig")) {
+          res.props.children = (
+            <ImageModalWrapper {...modalLayer}>{res.props.children}</ImageModalWrapper>
+          );
+        }
+      }
       return res;
     });
   }
