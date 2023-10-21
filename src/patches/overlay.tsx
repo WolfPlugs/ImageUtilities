@@ -1,4 +1,4 @@
-import { Injector, Logger, webpack, util, common } from "replugged";
+import { Injector, Logger, webpack, util, common, types } from "replugged";
 import { ImageModalWrapper } from "../components/ImageModalwrapper";
 import OverlayUI from "../components/OverlayUI";
 const inject = new Injector();
@@ -22,10 +22,10 @@ export default class Overlay {
   }
 
   start({ modalLayer, imageModalRender }) {
-    const image = webpack.getById(570738);
-    const video = webpack.getById(159689);
-    // inject.after(video as any, "Z", (_, res) => this.imageRender(res));
-    inject.after(image as any, "y", (_, res) => this.imageModal(res, imageModalRender));
+    const image = webpack.getBySource<Record<string, types.AnyFunction>>(".MEDIA_MODAL_CLOSE,");
+    inject.after(image, webpack.getFunctionKeyBySource(image, ".MEDIA_MODAL_CLOSE,")!, (_, res) =>
+      this.imageModal(res, imageModalRender),
+    );
     this.patchModalLayer(modalLayer);
   }
 
@@ -83,7 +83,8 @@ export default class Overlay {
       this.children,
       ({ props }) =>
         props?.render?.toString?.()?.includes("Messages.IMAGE") ||
-        props?.render?.toString?.()?.includes("modalCarouselClassName"),
+        props?.render?.toString?.()?.includes("modalCarouselClassName") ||
+        props?.render?.toString?.()?.includes("ImageModal"),
     );
 
     if (!ModalLayer) return;

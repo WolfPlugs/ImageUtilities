@@ -17,16 +17,14 @@ const MaskedLink = webpack.getBySource(".MASKED_LINK)");
 
 export default ({ original, src, width, height, stickerAssets }) => {
   openModal((props) => (
-    <ModalRoot className={modal} size={"dynamic"} aria-label={Messages.Image} {...props}>
+    <ModalRoot className={modal} size={"dynamic"} {...props}>
       <ImageModal
         className={image}
         shouldAnimate={true}
         src={src}
-        width={width}
-        height={height}
+        placeholder={src}
         renderLinkComponent={(p) => <MaskedLink {...p} />}
         original={original || src}
-        stickerAssets={stickerAssets}
       />
     </ModalRoot>
   ));

@@ -6,12 +6,7 @@ const { toast, api } = common;
 
 export default class Actions {
   public static openImage(args) {
-    const defaultArgs = {
-      height: 1024,
-      width: 1024,
-    };
     openImageModal({
-      ...defaultArgs,
       ...args,
     });
   }
@@ -21,7 +16,7 @@ export default class Actions {
   }
 
   public static copyLink(url, { original }) {
-    DiscordNative.clipboard.copy(original || url)
+    DiscordNative.clipboard.copy(original || url);
     // .then(() => {
     //   toast.toast("Link copied", toast.Kind.SUCCESS);
     // });
