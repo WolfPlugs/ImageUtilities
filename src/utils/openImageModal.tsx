@@ -23,6 +23,8 @@ export default ({ original, src, width, height, stickerAssets }) => {
         shouldAnimate={true}
         src={src}
         placeholder={src}
+        height={height}
+        width={width}
         renderLinkComponent={(p) => <MaskedLink {...p} />}
         original={original || src}
       />

@@ -150,7 +150,7 @@ export default class MainPatch {
           target.getAttribute("data-role") === "img" ||
           (target.getAttribute("data-type") === "sticker" && stickerItems.length)
         ) {
-          const { width, height } = target;
+          const { clientWidth: width, clientHeight: height } = target;
           const menu = res.children;
           const hideNativeButtons = settings.get("hideNativeButtons", true);
 
@@ -196,8 +196,10 @@ export default class MainPatch {
                 [e]: {
                   src,
                   original: isUrl(content) ? content : null,
-                  width: width * 2,
-                  height: height * 2,
+                  width: width,
+                  height: height,
+                  maxHeight: height,
+                  maxWidth: width,
                 },
               },
               settings,
