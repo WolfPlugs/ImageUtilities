@@ -6,7 +6,13 @@ const { toast, api } = common;
 
 export default class Actions {
   public static openImage(args) {
+    const defaultArgs = {
+      height: 1024,
+      width: 1024,
+    };
+
     openImageModal({
+      ...defaultArgs,
       ...args,
     });
   }
