@@ -98,7 +98,7 @@ export default class ImageToolsButton extends React.PureComponent {
   }
 
   renderContextMenu() {
-    const [imageButton, streamPreviewButton] = CustomContextMenu.renderRawItems(
+    const [res] = CustomContextMenu.renderRawItems(
       [
         {
           ...this.btnId,
@@ -111,18 +111,18 @@ export default class ImageToolsButton extends React.PureComponent {
             return this.items;
           },
         },
-        this.props.images.streamPreview ? this.getStreamMenuItem() : null,
+        //this.props.images.streamPreview ? this.getStreamMenuItem() : null,
       ].filter(Boolean),
     );
 
     const prioritySort = priority.filter((e) => this.getItems().includes(e));
     const actionId = this.props.settings.get("defaultAction", "open-image");
-    imageButton.props.action = this.getAction(prioritySort, actionId);
+    res.props.action = this.getAction(prioritySort, actionId);
     // const saveImageBtn = findInReactTree(res, (m: any) => m.props?.id === "save-image");
     // if (saveImageBtn) {
     //   saveImageBtn.props.action = this.getAction(prioritySort, 'save');
     // }
-    return [imageButton, streamPreviewButton];
+    return res;
   }
 
   getSubMenuItems(images: any) {

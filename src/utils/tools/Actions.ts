@@ -11,10 +11,15 @@ export default class Actions {
       width: 1024,
     };
 
-    openImageModal({
-      ...defaultArgs,
-      ...args,
-    });
+    const { height, width, ...restArgs } = args;
+
+    const finalArgs = {
+      height: height || defaultArgs.height,
+      width: width || defaultArgs.width,
+      ...restArgs,
+    };
+    console.log(finalArgs);
+    openImageModal(finalArgs);
   }
 
   public static openLink(url, { original }) {

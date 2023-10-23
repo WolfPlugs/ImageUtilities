@@ -130,10 +130,10 @@ export default class MainPatch {
       memorizeRewnder.cache.clear();
 
       if (Array.isArray(menu)) {
-        menu.splice(menu.length - 1, 0, ...btn);
+        menu.splice(menu.length - 1, 0, btn);
       } else {
         menu.type = memorizeRewnder(menu.type, (res: any) => {
-          res.props.children.splice(res.props.children.length - 1, 0, ...btn);
+          res.props.children.splice(res.props.children.length - 1, 0, btn);
           return res;
         });
       }
@@ -187,6 +187,7 @@ export default class MainPatch {
             }
           }
           if (target.tagName === "CANVAS") {
+
             menu.splice(menu.length - 1, 0, Button.renderSticker(stickerItems[0].id, settings));
           } else {
             const [e, src] = getImage(target);
@@ -307,7 +308,7 @@ export default class MainPatch {
             {
               [e]: {
                 src: fixUrlSize(url.href),
-                widht: 2048,
+                width: 2048,
                 height: 918,
               },
             },
@@ -343,7 +344,7 @@ export default class MainPatch {
           webp: { src: link.endsWith(".png") ? link.replace(".png", ".webp") : link },
         };
 
-        return initButton(res.children, { images, settings });
+       return initButton(res.children, { images, settings });
       },
 
       //StreamContext(data, res, settings) {},
