@@ -70,7 +70,8 @@ export default class MainPatch {
       res,
       (m: any) =>
         m?.props?.render?.toString?.()?.includes("Messages.IMAGE") ||
-        m?.props?.render?.toString?.()?.includes("modalCarouselClassName"),
+        m?.props?.render?.toString?.()?.includes("modalCarouselClassName") ||
+        m?.props?.render?.toString?.()?.includes("ImageModal"),
     );
     try {
       tree = nativeModalChildren?.props?.render();
@@ -129,10 +130,10 @@ export default class MainPatch {
       memorizeRewnder.cache.clear();
 
       if (Array.isArray(menu)) {
-        menu.splice(menu.length - 1, 0, btn);
+        menu.splice(menu.length - 1, 0, ...btn);
       } else {
         menu.type = memorizeRewnder(menu.type, (res: any) => {
-          res.props.children.splice(res.props.children.length - 1, 0, btn);
+          res.props.children.splice(res.props.children.length - 1, 0, ...btn);
           return res;
         });
       }
@@ -149,21 +150,40 @@ export default class MainPatch {
           target.getAttribute("data-role") === "img" ||
           (target.getAttribute("data-type") === "sticker" && stickerItems.length)
         ) {
-          const { width, height } = target;
+          const { clientWidth: width, clientHeight: height } = target;
           const menu = res.children;
           const hideNativeButtons = settings.get("hideNativeButtons", true);
 
           if (hideNativeButtons) {
-            for (let i = menu.length - 1; i >= 0; i -= 1) {
-              const e = menu[i];
-              if (Array.isArray(e?.props?.children) && e?.props?.children[0]) {
-                if (
-                  e.props.children[0].key === "copy-image" ||
-                  e.props.children[0].key === "copy-native-link"
-                ) {
-                  menu.splice(i, 1);
-                }
-              }
+            const imageItemGroup = menu.find((m) =>
+              m?.props?.children?.some?.(
+                (c) =>
+                  c?.props?.id === "copy-image" || c?.some?.((i) => i?.props?.id === "copy-image"),
+              ),
+            );
+            if (imageItemGroup) {
+              imageItemGroup.props.children = imageItemGroup.props.children.filter(
+                (m) =>
+                  m?.props?.id !== "copy-image" &&
+                  m?.props?.id !== "save-image" &&
+                  !m?.some?.((i) => i?.props?.id === "copy-image"),
+              );
+            }
+
+            const linkItemGroup = menu.find((m) =>
+              m?.props?.children?.some?.(
+                (c) =>
+                  c?.props?.id === "copy-native-link" ||
+                  c?.some?.((i) => i?.props?.id === "copy-native-link"),
+              ),
+            );
+            if (linkItemGroup) {
+              linkItemGroup.props.children = linkItemGroup.props.children.filter(
+                (m) =>
+                  m?.props?.id !== "copy-native-link" &&
+                  m?.props?.id !== "open-native-link" &&
+                  !m?.some?.((i) => i?.props?.id === "copy-native-link"),
+              );
             }
           }
           if (target.tagName === "CANVAS") {
@@ -176,8 +196,10 @@ export default class MainPatch {
                 [e]: {
                   src,
                   original: isUrl(content) ? content : null,
-                  width: width * 2,
-                  height: height * 2,
+                  width: width,
+                  height: height,
+                  maxHeight: height,
+                  maxWidth: width,
                 },
               },
               settings,
@@ -201,25 +223,25 @@ export default class MainPatch {
           guildMemberAvatars.splice(0, 0, guildMemberAvatars.splice(currentGuildId, 1)[0]);
         }
 
-        // const [stream, previewUrl] = flux.useStateFromStores(
-        //   [ApplicationStreamingStore, ApplicationStreamPreviewStore],
-        //   () => {
-        //     const stream = ApplicationStreamingStore.getAnyStreamForUser(user.id);
-        //     const previewUrl =
-        //       stream &&
-        //       ApplicationStreamPreviewStore.getPreviewURL(
-        //         stream.guildId,
-        //         stream.channelId,
-        //         stream.ownerId,
-        //       );
+        const [stream, previewUrl] = flux.useStateFromStores(
+          [ApplicationStreamingStore, ApplicationStreamPreviewStore],
+          () => {
+            const stream = ApplicationStreamingStore.getAnyStreamForUser(user.id);
+            const previewUrl =
+              stream &&
+              ApplicationStreamPreviewStore.getPreviewURL(
+                stream.guildId,
+                stream.channelId,
+                stream.ownerId,
+              );
 
-        //     return [stream, previewUrl];
-        //   },
-        // );
+            return [stream, previewUrl];
+          },
+        );
 
         const images = {
           isCurrentGuild,
-          //streamPreview: stream && previewUrl.startsWith("https://") ? previewUrl : null,
+          streamPreview: stream && previewUrl.startsWith("https://") ? previewUrl : null,
           guildAvatars: guildMemberAvatars.map(([guildId, avatar]) => ({
             guildName: guilds.getGuild(guildId).name,
             png: {
@@ -310,7 +332,7 @@ export default class MainPatch {
         );
 
         openImage.props.disabled = true;
-        res.children = [...button.props.children, ...LensSettings.render(settings)];
+        res.children = [...button?.props?.children, ...LensSettings.render(settings)];
       },
 
       GdmContext(data, res, settings) {

@@ -45,24 +45,29 @@ export default class ImageToolsButton extends React.PureComponent {
   static renderSticker(id, settings) {
     const itb = new ImageToolsButton({ settings });
 
-    itb.disabledActions = ['copy-image', 'open-link', 'copy-link', 'save-as', 'search-image'];
-    const [res] = CustomContextMenu.renderRawItems([{
-      ...itb.btnId,
-      type: 'submenu',
-      items: itb.getBaseMenu({
-        stickerAssets: {
-          size: 320,
-          sticker: {
-            id,
-            format_type: 3
-          }
+    itb.disabledActions = ["copy-image", "open-link", "copy-link", "save-as", "search-image"];
+    const [res] = CustomContextMenu.renderRawItems([
+      {
+        ...itb.btnId,
+        type: "submenu",
+        items: itb.getBaseMenu(
+          {
+            stickerAssets: {
+              size: 320,
+              sticker: {
+                id,
+                format_type: 3,
+              },
+            },
+            src: `https://media.discordapp.com/stickers/${id}.png?passtrough=true`,
+          },
+          [],
+        ),
+        getItems() {
+          return this.items;
         },
-        src: `https://media.discordapp.com/stickers/${id}.png?passtrough=true`
-      }, []),
-      getItems() {
-        return this.items;
-      }
-    }]);
+      },
+    ]);
     res.props.action = findInReactTree(res, ({ props }) => props?.action).props.action;
     return res;
   }
@@ -93,23 +98,31 @@ export default class ImageToolsButton extends React.PureComponent {
   }
 
   renderContextMenu() {
-    const [res] = CustomContextMenu.renderRawItems([{
-      ...this.btnId,
-      type: 'submenu',
-      items: this.getSubMenuItems(this.props.images, this.disabledActions),
-      getItems() {
-        return this.items;
-      }
-    }])
+    const [imageButton, streamPreviewButton] = CustomContextMenu.renderRawItems(
+      [
+        {
+          ...this.btnId,
+          type: "submenu",
+          items:
+            this.getSubMenuItems(this.props.images, this.disabledActions).length <= 1
+              ? this.getSubMenuItems(this.props.images, this.disabledActions)[0].items
+              : this.getSubMenuItems(this.props.images, this.disabledActions),
+          getItems() {
+            return this.items;
+          },
+        },
+        this.props.images.streamPreview ? this.getStreamMenuItem() : null,
+      ].filter(Boolean),
+    );
 
     const prioritySort = priority.filter((e) => this.getItems().includes(e));
     const actionId = this.props.settings.get("defaultAction", "open-image");
-    res.props.action = this.getAction(prioritySort, actionId);
+    imageButton.props.action = this.getAction(prioritySort, actionId);
     // const saveImageBtn = findInReactTree(res, (m: any) => m.props?.id === "save-image");
     // if (saveImageBtn) {
     //   saveImageBtn.props.action = this.getAction(prioritySort, 'save');
     // }
-    return res;
+    return [imageButton, streamPreviewButton];
   }
 
   getSubMenuItems(images: any) {
@@ -151,7 +164,7 @@ export default class ImageToolsButton extends React.PureComponent {
         items: this.getSubMenuItems(this.props.images.guildBanner[0]),
         getItems() {
           return this.items;
-        }
+        },
       },
       {
         type: "submenu",
@@ -161,7 +174,7 @@ export default class ImageToolsButton extends React.PureComponent {
 
         getItems() {
           return this.items;
-        }
+        },
       },
     ];
   }
@@ -169,8 +182,8 @@ export default class ImageToolsButton extends React.PureComponent {
   getGuildAvatarsMenu() {
     return [
       {
-        type: 'submenu',
-        id: 'guild-avatar',
+        type: "submenu",
+        id: "guild-avatar",
         name: Messages.PER_GUILD_AVATAR,
         items: [
           ...(this.props.images.isCurrentGuild
@@ -178,54 +191,52 @@ export default class ImageToolsButton extends React.PureComponent {
             : []),
           ...(this.props.images.guildAvatars.length > 0
             ? this.props.images.guildAvatars.map(({ guildName }, i) => ({
-              type: 'submenu',
-              name: guildName,
-              items: this.getSubMenuItems(this.props.images.guildAvatars[i]),
-              getItems() {
-                return this.items;
-              }
-            }))
+                type: "submenu",
+                name: guildName,
+                items: this.getSubMenuItems(this.props.images.guildAvatars[i]),
+                getItems() {
+                  return this.items;
+                },
+              }))
             : []),
         ],
         getItems() {
           return this.items;
-        }
+        },
       },
       {
-        type: 'submenu',
-        id: 'user-avatar',
+        type: "submenu",
+        id: "user-avatar",
         name: Messages.PROFILE,
         items: this.getSubMenuItems(this.props.images.default),
         getItems() {
           return this.items;
-        }
+        },
       },
     ];
   }
 
   getStreamMenuItem() {
     return {
-        type: 'button',
-        id: 'open-stream-preview',
-        name: "Open Stream Preview",
-        action: () => Actions.openImage({src: this.props.images.streamPreview}),
-      };
+      type: "button",
+      id: "open-stream-preview",
+      name: "Open Stream Preview",
+      action: () => Actions.openImage({ src: this.props.images.streamPreview }),
+    };
   }
 
   getBaseMenu(image, disabled) {
-
     return buttonStructure
       .filter(({ id }) => !this.disabledActions.includes(id))
       .map((item) => ({
         disabled: disabled.includes(item.id),
         //name: item.name,
         ...item,
-        ...this.getExtraItemsProperties(image, item.id)
+        ...this.getExtraItemsProperties(image, item.id),
       }));
   }
 
   getExtraItemsProperties(image, snakeId) {
-
     const id = camelCaseify(snakeId);
     const { src, original } = image;
     //const saveImageDirs = this.props.settings.get('saveImageDirs', []);
@@ -267,7 +278,7 @@ export default class ImageToolsButton extends React.PureComponent {
             type: "button",
             name: e.name,
             subtext: allowSubText ? e.note : null,
-            action: () => openLink(e.url, e.withoutEncode)
+            action: () => openLink(e.url, e.withoutEncode),
           })),
           {
             type: "button",
@@ -276,12 +287,12 @@ export default class ImageToolsButton extends React.PureComponent {
             action: () =>
               this.imageSearchEngines.forEach(({ url, withoutEncode }) =>
                 openLink(url, withoutEncode),
-              )
-          }
+              ),
+          },
         ],
         getItems() {
           return this.children;
-        }
+        },
       },
     };
 

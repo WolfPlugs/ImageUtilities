@@ -63,6 +63,7 @@ export default class ImageToolsOverlay extends React.PureComponent {
       getRectImage: () => ({}),
       renderPreview: () => null,
       style: {
+        position: "absolute",
         borderColor: props.settings?.get("lensColor", 0),
         get imageRendering() {
           return props.settings?.get("disableAntiAliasing", null) ? "pixelated" : null;
@@ -162,6 +163,7 @@ export default class ImageToolsOverlay extends React.PureComponent {
   }
 
   onMouseButton(e) {
+    e.stopPropagation();
     if (e.target.closest("div.header, div.footer")) return;
     const suppress = this.getAdditionalHandler(e, "onMouseButton");
     if (suppress) return;

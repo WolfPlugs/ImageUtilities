@@ -28,7 +28,6 @@ export default class Lens extends React.PureComponent {
         ...rawPos,
       };
     }
-
     return (
       <>
         <div className="image-tools-lens" style={style.parent}>

@@ -11,14 +11,20 @@
   margin: -2px;
   display: none;
   overflow: hidden;
+  justify-self: unset;
 }
 .image-tools-lens > div > * {
   pointer-events: none;
 }
 .image-tools-lens > div > div > *,
 .image-tools-lens > div > div {
+  max-width: unset !important;
+  max-height: unset !important;
   width: inherit !important;
   height: inherit !important;
+}
+.image-tools-lens > div > div > [class^="imageAccessory-"] {
+  display: none;
 }
 .image-tools-color-picker-prev {
   transform: translateX(-50%);
