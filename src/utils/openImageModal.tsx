@@ -12,7 +12,7 @@ const ImageModal = webpack.getFunctionBySource(
   webpack.getBySource(".MEDIA_MODAL_CLOSE,"),
   ".MEDIA_MODAL_CLOSE,",
 );
-const { modal, image } = webpack.getByProps(["modal", "image"]);
+const { modal, image } = webpack.getByProps(["modal", "image", "responsiveWidthMobile"]);
 const MaskedLink = webpack.getBySource(".MASKED_LINK)");
 
 export default ({ original, src, width, height, stickerAssets }) => {
@@ -25,7 +25,7 @@ export default ({ original, src, width, height, stickerAssets }) => {
         placeholder={src}
         height={height}
         width={width}
-        renderLinkComponent={(p) => <MaskedLink {...p} />}
+        renderLinkComponent={(props) => <MaskedLink {...props} />}
         original={original || src}
       />
     </ModalRoot>
