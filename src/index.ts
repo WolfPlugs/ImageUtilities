@@ -7,6 +7,7 @@ export const defaultSet = {
   zoomRatio: 0,
   wheelStep: 0,
 };
+
 const theSettings = await settings.init<{
   lensRadius: number;
   zoomRatio: number;

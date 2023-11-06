@@ -1,4 +1,4 @@
-import { common, webpack } from "replugged";
+import { common } from "replugged";
 const {
   messages: { getMessages },
 } = common;

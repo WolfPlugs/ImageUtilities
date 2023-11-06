@@ -18,7 +18,6 @@ export default class Actions {
       width: width || defaultArgs.width,
       ...restArgs,
     };
-    console.log(finalArgs);
     openImageModal(finalArgs);
   }
 

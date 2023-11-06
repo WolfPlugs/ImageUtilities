@@ -12,7 +12,7 @@ const ImageModal = webpack.getFunctionBySource(
   webpack.getBySource(".MEDIA_MODAL_CLOSE,"),
   ".MEDIA_MODAL_CLOSE,",
 );
-const { modal, image } = webpack.getByProps(["modal", "image", "responsiveWidthMobile"]);
+const { modal, image } = webpack.getByProps(["modal", "image"]);
 const MaskedLink = webpack.getBySource(".MASKED_LINK)");
 
 export default ({ original, src, width, height, stickerAssets }) => {
