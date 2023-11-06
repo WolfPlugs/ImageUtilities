@@ -1,4 +1,5 @@
 import { common } from "replugged";
+
 const {
   i18n: { Messages },
 } = common;

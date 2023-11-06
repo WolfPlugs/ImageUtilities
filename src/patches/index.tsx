@@ -6,11 +6,11 @@ import Button from "../components/Button";
 import LensSettings from "../utils/tools/Settings";
 
 const { ContextMenuTypes } = types;
-const { React, guilds, flux } = common;
+const { React, guilds, flux, lodash } = common;
 
 const { image } = await webpack.waitForModule<{
   image: string;
-}>(webpack.filters.byProps("image", "modal", "responsiveWidthMobile"));
+}>(webpack.filters.byProps("image", "modal"));
 
 const {
   getGuildBannerURL,
@@ -19,13 +19,13 @@ const {
   getGuildMemberAvatarURL,
   getUserAvatarURL,
   isAnimatedIconHash,
-} = webpack.getByProps(["getUserAvatarURL"]);
+} = webpack.getByProps(["getUserAvatarURL", "getGuildIconURL"]);
 
 const ApplicationStreamingStore = webpack.getByStoreName("ApplicationStreamingStore");
 const ApplicationStreamPreviewStore = webpack.getByStoreName("ApplicationStreamPreviewStore");
 
 const initMemorizeRender = () =>
-  window._.memoize(
+lodash._.memoize(
     (render, patch) =>
       (...renderArgs) =>
         patch(render(...renderArgs)),
@@ -282,7 +282,6 @@ export default class MainPatch {
 
       GuildContext(data, res, settings) {
         let url, e;
-        console.log(data);
         const params = {
           id: data?.guild?.id,
           icon: data?.guild?.icon,

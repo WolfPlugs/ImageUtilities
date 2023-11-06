@@ -1,6 +1,7 @@
 import { Injector, Logger, webpack, util, common, types } from "replugged";
 import { ImageModalWrapper } from "../components/ImageModalwrapper";
 import OverlayUI from "../components/OverlayUI";
+
 const inject = new Injector();
 const logger = Logger.plugin("ImageUtilis | Overlay");
 const { React } = common;
@@ -23,7 +24,7 @@ export default class Overlay {
 
   start({ modalLayer, imageModalRender }) {
     const image = webpack.getBySource<Record<string, types.AnyFunction>>(".MEDIA_MODAL_CLOSE,");
-    inject.after(image, webpack.getFunctionKeyBySource(image, ".MEDIA_MODAL_CLOSE,")!, (_, res) =>
+    inject.after(image, 'ImageModal', (_, res) =>
       this.imageModal(res, imageModalRender),
     );
     this.patchModalLayer(modalLayer);
