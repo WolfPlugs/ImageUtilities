@@ -144,6 +144,8 @@ export default class MainPatch {
       MessageContext(data, res, settings) {
         const stickerItems = data?.message?.stickerItems;
         const content = data?.message?.content;
+        // ContextMenu unable to get target attributes
+        // Todo fix this
         const target = data?.data[0]?.target;
         if (
           target.tagName === "IMG" ||
