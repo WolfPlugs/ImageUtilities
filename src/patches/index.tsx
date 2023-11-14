@@ -70,11 +70,11 @@ export default class MainPatch {
       res,
       (m: any) =>
         m?.props?.render?.toString?.()?.includes("Messages.IMAGE") ||
-        m?.props?.render?.toString?.()?.includes("modalCarouselClassName") ||
+        m?.props?.render?.toString?.()?.includes("zoomedCarouselModalRoot") ||
         m?.props?.render?.toString?.()?.includes("ImageModal"),
     );
     try {
-      tree = nativeModalChildren?.props?.render();
+      tree = nativeModalChildren?.props?.render({});
     } catch {}
     if (tree) {
       if (
@@ -144,6 +144,8 @@ export default class MainPatch {
       MessageContext(data, res, settings) {
         const stickerItems = data?.message?.stickerItems;
         const content = data?.message?.content;
+        // ContextMenu unable to get target attributes
+        // Todo fix this
         const target = data?.data[0]?.target;
         if (
           target.tagName === "IMG" ||
@@ -187,7 +189,6 @@ export default class MainPatch {
             }
           }
           if (target.tagName === "CANVAS") {
-
             menu.splice(menu.length - 1, 0, Button.renderSticker(stickerItems[0].id, settings));
           } else {
             const [e, src] = getImage(target);
@@ -343,7 +344,7 @@ export default class MainPatch {
           webp: { src: link.endsWith(".png") ? link.replace(".png", ".webp") : link },
         };
 
-       return initButton(res.children, { images, settings });
+        return initButton(res.children, { images, settings });
       },
 
       //StreamContext(data, res, settings) {},

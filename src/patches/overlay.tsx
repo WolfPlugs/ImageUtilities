@@ -24,9 +24,22 @@ export default class Overlay {
 
   start({ modalLayer, imageModalRender }) {
     const image = webpack.getBySource<Record<string, types.AnyFunction>>(".MEDIA_MODAL_CLOSE,");
-    inject.after(image, 'ImageModal', (_, res) =>
-      this.imageModal(res, imageModalRender),
-    );
+    const { exports: mosaicModal } = webpack.getBySource(".carouselModal", { raw: true }) ?? {};
+    inject.after(image, "ImageModal", (_, res) => this.imageModal(res, imageModalRender));
+    inject.after(webpack.getByProps("ModalRoot")!, "ModalRoot", (_, res) => {
+      const original = res.props.children.props.onClick;
+      let dontRun = false;
+      res.props.children.props.onClick = (event) => {
+        if (dontRun || event.target.className === "") {
+          dontRun = event.target.className === "";
+          return null;
+        }
+        return original?.(event);
+      };
+
+      return res;
+    });
+
     this.patchModalLayer(modalLayer);
   }
 

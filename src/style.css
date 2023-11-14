@@ -13,15 +13,29 @@
   overflow: hidden;
   justify-self: unset;
 }
+.image-tools-lens > div {
+  display: "flex";
+  align-items: "center";
+  align-self: "center";
+  justify-content: "center";
+  justify-self: "center";
+  flex-basis: "100%";
+}
+
 .image-tools-lens > div > * {
   pointer-events: none;
 }
+[class*="zoomedCarouselModalRoot"],
 .image-tools-lens > div > div > *,
 .image-tools-lens > div > div {
   max-width: unset !important;
   max-height: unset !important;
   width: inherit !important;
   height: inherit !important;
+}
+[class*="zoomedCarouselModalRoot"] > div {
+  display: unset !important;
+  position: unset !important;
 }
 .image-tools-lens > div > div > [class^="imageAccessory-"] {
   display: none;
