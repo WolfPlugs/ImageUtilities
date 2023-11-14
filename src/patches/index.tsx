@@ -25,7 +25,7 @@ const ApplicationStreamingStore = webpack.getByStoreName("ApplicationStreamingSt
 const ApplicationStreamPreviewStore = webpack.getByStoreName("ApplicationStreamPreviewStore");
 
 const initMemorizeRender = () =>
-  lodash._.memoize(
+lodash._.memoize(
     (render, patch) =>
       (...renderArgs) =>
         patch(render(...renderArgs)),
