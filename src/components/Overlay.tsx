@@ -163,7 +163,6 @@ export default class ImageToolsOverlay extends React.PureComponent {
   }
 
   onMouseButton(e) {
-    e.stopPropagation();
     if (e.target.closest("div.header, div.footer")) return;
     const suppress = this.getAdditionalHandler(e, "onMouseButton");
     if (suppress) return;

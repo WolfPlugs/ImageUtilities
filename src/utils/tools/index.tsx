@@ -12,7 +12,7 @@ export default class Lens extends React.PureComponent {
       const [parentSize, childSize] = this.getSize(this.props);
 
       style.parent = {
-        display: "block",
+        display: "flex",
         left: `${parentPos.x}px`,
         top: `${parentPos.y}px`,
         width: `${parentSize.w}px`,
